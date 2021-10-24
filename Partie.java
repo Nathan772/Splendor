@@ -1,5 +1,3 @@
-package projet;
-
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -12,7 +10,7 @@ public class Partie {
 	
 	private static final int VICTORY_POINTS = 15;
 	
-	private ArrayList<Joueur> joueurs;
+	public ArrayList<Joueur> joueurs;
 	private ArrayList<Carte> pioche;
 	private int taille_pioche;
 	private List<Carte> board;
@@ -175,9 +173,9 @@ public class Partie {
 	public static Joueur topClassement(ArrayList<Joueur> classement) {
 		
 		Joueur best_player = classement.get(0);
-		int i = 1;
+		int i = 0;
 		
-		while(classement.get(i).points_prestiges == best_player.points_prestiges) {
+		while(classement.get(i).points_prestiges == best_player.points_prestiges && i < classement.size() - 1) {
 			
 			if(classement.get(i).cartes < best_player.cartes) {
 				best_player = classement.get(i);
@@ -282,30 +280,6 @@ public class Partie {
 		this.jetons_disponibles.put(jeton.couleur(), quantite_total);
 	}
 	
-	/*public static Boolean isExistingColours(String chaine){
-		Objects.requireNonNull(chaine);
-		if(chaine.equals("Vert") != true && chaine.equals("Rouge") != true && chaine.equals("Bleu") != true 
-				&& chaine.equals("Jaune") != true
-				&& chaine.equals("Blanc") != true && chaine.equals("Onyx") != true) {
-			return false;
-		}
-		return true;
-	}*/
-	
-	public static Jeton saisieJeton(){
-		Scanner scanner = new Scanner(System.in);
-		  String text = scanner.next();  //User rentre "Violet"
- 
-		  while(!Saisie.isExistingColours(text)){  //La méthode renvoie true donc on entre dans la boucle
-
-		    System.out.println("Valeur non recevable, veuillez entrer une nouvelle valeur.\n");
-		    text = scanner.next();  //User rentre "Vert"
-		  }
-
-		 var jeton = new Jeton(text);  // Jeton Vert
-
-		  return jeton;
-		}
 	
 	/**
 	 * Déroulement de la partie.		   
@@ -399,8 +373,9 @@ public class Partie {
 				game.enleveRessource(jeton3, 3);*/
 				
 				for(int i= 0; i < 3;i++){
-					  var jeton = saisieJeton();
+					  var jeton = Saisie.saisieJeton();	 //On accède à la classe Saisie pour la saisie des jetons
 					  joueur.addRessource(jeton,3);
+					  game.enleveRessource(jeton, 3);
 					}
 			}
 			
@@ -417,7 +392,7 @@ public class Partie {
 			
 		}
 		
-		/** Note : System.out.println("\nFélicitations " + game.isWinner())   Ne marche pas encore bien*/
+		System.out.println("\nFélicitations " + game.isWinner());
 		
 		System.out.println("\nFin");	//Fin de jeu
 		
@@ -429,7 +404,6 @@ public class Partie {
 		
 		
 		System.out.println(game.board);
-
 	
 		
 		j.acheteCarte(game.board.get(choosen_card));
@@ -455,18 +429,11 @@ public class Partie {
 
 
 /*
-
-
 ========================================================= Remarque/ Notes générales ========================================================================
-
-
-
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
-
-
 Demander si pas gênant d'avoir autant de champs dans une classe
-
 */
 
 
+ 
 
