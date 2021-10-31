@@ -1,5 +1,3 @@
-package projet;
-
 import java.util.Objects;
 import java.util.HashMap;
 import java.util.List;
@@ -8,9 +6,9 @@ public class Joueur {
 
 	public int cartes;
 	public final String pseudo;
-	private final int age;
+	public final int age;
 	public int points_prestiges;
-	private HashMap<String, Integer> ressources;
+	public HashMap<String, Integer> ressources;
 
 	
 	
@@ -60,7 +58,7 @@ public class Joueur {
 	 * Initialise les ressources que possède un joueur.
 	 */
 	public void initRessourcesMap() {
-		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Jaune");
+		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc", "Jaune");
 		
 		for(var elem : couleurs) {
 			this.ressources.put(elem, 0);
@@ -110,6 +108,22 @@ public class Joueur {
 		
 		return old_val - val;
 	}
+	
+	
+	
+	@Override
+	public boolean equals(Object player) {
+		
+		return player instanceof Joueur joueur
+				&& age == joueur.age
+				&&pseudo.equals(pseudo);
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	/**
@@ -210,6 +224,33 @@ public class Joueur {
 		j1.addPrestige(-10);
 		System.out.println(j1.points_prestiges);
 		
+		
 	}
 
 }
+
+
+
+
+
+
+/*
+ * 
+ * 
+ * 
+ * 
+ * 
+ * Verifier qu'il n'y a pas deux joueurs identiques (pas le même nom)
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * */
