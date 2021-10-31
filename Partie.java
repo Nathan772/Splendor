@@ -13,9 +13,9 @@ public class Partie {
 	public ArrayList<Joueur> joueurs;
 	private ArrayList<Carte> pioche;
 	private int taille_pioche;
-	private List<Carte> board;
-	private HashMap<String, Integer> jetons_disponibles;	/*On met une Map pour représenter les piles de jetons*/
-	//taille pioche (peut-être)
+	public List<Carte> board;
+	public HashMap<String, Integer> jetons_disponibles;	/*On met une Map pour représenter les piles de jetons*/
+
 	
 	
 	/**
@@ -33,11 +33,74 @@ public class Partie {
 	 * Initialise une partie. Correspond à la préparation du plateau.
 	 */
 	public void initialisePartie() {
+		this.initialiseOrdreJoueurs();
 		this.initialisePioche();
 		this.initialiseJetons();
 		this.piocheFourCards();
 	}
+	
+	
+	/**
+	 * Modifie l'odre de la liste des joueurs afin que celui qui commence soit le joueur, le plus jeune.
+	 */
+	public void initialiseOrdreJoueurs() {
+		
+		int i = 0;
+		ArrayList<Joueur> extrait = new ArrayList<Joueur>();
+		ArrayList<Joueur> base = new ArrayList<Joueur>();
+		
+		int indice_younger = findYounger(this.joueurs);
+		
+		
+		for(var joueur : this.joueurs) {
+			
+			if(i < indice_younger) {
+				extrait.add(joueur);
+			}else {
+				base.add(joueur);
+			}
+			
+			i++;
+		}
+		
+		for(var joueur_extrait : extrait) {
+			base.add(joueur_extrait);
+		}
+		
+		this.joueurs = base;
+	}
 
+	
+	
+	/**
+	 * Renvoie l'indice du joueur le plus jeune de la liste de joueurs.
+	 * Renvoie la valeur -1 si problème rencontré.
+	 * 
+	 * @param joueurs
+	 *        Liste de joueurs dont on doit trouver le plus jeune
+	 *        
+	 * @return Indice du joueur le plus jeune
+	 */
+	public static int findYounger(ArrayList<Joueur> joueurs) {
+		
+		int i = 0;
+		int indice_younger = -1;
+		
+		Joueur younger = joueurs.get(i);
+		
+		for(var joueur : joueurs) {
+			
+			if(younger.age > joueur.age) {
+				younger = joueur;
+				indice_younger = i;
+			}
+			
+			i++;
+		}
+		
+		return indice_younger;
+	}
+	
 	
 	/**
 	 * Initialise les jetons disponibles d'une partie. Il y a 7 jetons par couleur
@@ -88,14 +151,15 @@ public class Partie {
 	public Carte piocheOneCard(int index_supp) {
 		
 		int derniere_carte = this.taille_pioche - 1;
-		
 		this.taille_pioche -= 1;
 		
-		Carte carte_picked = this.pioche.remove(derniere_carte);
+
+		Carte card_picked = this.pioche.remove(derniere_carte);
+
 		
-		this.board.set(index_supp, carte_picked);
+		this.board.set(index_supp, card_picked);
 		
-		return carte_picked;
+		return card_picked;
 		
 	}
 	
@@ -108,6 +172,8 @@ public class Partie {
 		for(int i  =0; i < 4 ;i++) {
 			this.piocheOneCard(i);
 		}
+		
+		this.taille_pioche = 4;
 	}
 	
 	/**
@@ -324,8 +390,8 @@ public class Partie {
 			
 			/** Note : Mettre des méthodes d'affichage plus propres (peut-être dans une classe à part AffichageCommande)*/
 			
-			System.out.println("\nPlateau :\n" + game.board + "\n");
-			System.out.println("\nJetons :\n" + game.jetons_disponibles + "\n\n");
+			AffichageLigneCommande.showPlateau(game);
+
 			System.out.println("Tour du joueur : " + joueur.pseudo + "\n");
 			System.out.println("(1) Acheter une carte\n(2) Prendre des ressources\n");
 			
@@ -333,6 +399,7 @@ public class Partie {
 			if(scanner.nextInt() == 1) {
 				
 				/*--------- Achat de cartes --------------*/
+				AffichageLigneCommande.showBoard(game);
 				
 				System.out.println("\nChoisissez le numéro de la carte à acheter");
 				
@@ -341,8 +408,8 @@ public class Partie {
 				if(choosen_card <= 4) {
 					
 					if(joueur.acheteCarte(game.board.get(choosen_card))) {
-						
-						game.piocheOneCard(1);
+
+						game.piocheOneCard(choosen_card);
 						
 					}else {
 						
@@ -354,6 +421,8 @@ public class Partie {
 			}else {
 				
 				/*---------- Prendre ressources ------------*/
+				
+				AffichageLigneCommande.showJeton(game.jetons_disponibles);
 				
 				System.out.println("\nVeuillez entrer trois noms de couleur");
 				/*on vide le scanner*/
@@ -379,7 +448,7 @@ public class Partie {
 					}
 			}
 			
-			System.out.println(joueur + "\n\n");	//Affiche l'état du joueur à la fin de sont tour
+			AffichageLigneCommande.showJoueur(joueur);
 
 			
 			//Le jouer a atteint 15 points, une des conditions de fin de jeu est atteinte
@@ -388,31 +457,15 @@ public class Partie {
 				points_victoires = true;
 			}
 			
+			
+			scanner.nextLine();	//On part au tour suivant une fois le joueur ayant mis Entrer
+			
 			tour ++;
 			
 		}
 		
-		System.out.println("\nFélicitations " + game.isWinner());
+		System.out.println("\nFÉLICIATIONS !!!!!!  " + game.isWinner()); // Fin de partie
 		
-		System.out.println("\nFin");	//Fin de jeu
-		
-		
-		
-		
-		/*
-		game.piocheOneCard(1);
-		
-		
-		System.out.println(game.board);
-	
-		
-		j.acheteCarte(game.board.get(choosen_card));
-		
-		System.out.println(j);
-		j.showRessources();
-		
-		*/
-		/*scanner.close();*/
 	}
 	
 }
@@ -433,6 +486,7 @@ public class Partie {
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
 Demander si pas gênant d'avoir autant de champs dans une classe
 */
+
 
 
  
