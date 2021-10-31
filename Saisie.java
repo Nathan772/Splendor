@@ -20,7 +20,9 @@ public class Saisie {
 		}
 	
 	public static Boolean isExistingColours(String chaine){
+		
 		Objects.requireNonNull(chaine);
+		
 		if(chaine.equals("Vert") != true && chaine.equals("Rouge") != true && chaine.equals("Bleu") != true 
 				&& chaine.equals("Jaune") != true
 				&& chaine.equals("Blanc") != true && chaine.equals("Noir") != true) {
