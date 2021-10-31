@@ -1,5 +1,3 @@
-package projet;
-
 import java.util.Objects;
 
 
