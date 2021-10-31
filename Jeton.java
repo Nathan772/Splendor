@@ -1,4 +1,3 @@
-package projet;
 import java.util.Objects;
 
 /*Demander si utile mettre une record avec un seul champ*/
@@ -34,11 +33,11 @@ public record Jeton(String couleur) {
 	}
 	
 	/**
-	 * Ensemble des tests des méthodes du type Jeton
+	 * En semble des tests des méthodes du type Jeton
 	 */
 	public static void main(String[] args) {
 		
-		var jeton = new Jeton("Noir");
+		var jeton = new Jeton("Blanc");
 		
 		System.out.println("Vous avez obtenu une pierre précieuse : " + jeton);
 	}
