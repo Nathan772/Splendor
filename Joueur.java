@@ -9,6 +9,7 @@ public class Joueur {
 	public final int age;
 	public int points_prestiges;
 	public HashMap<String, Integer> ressources;
+	public HashMap<String, Integer> bonus;
 
 	
 	
@@ -41,18 +42,11 @@ public class Joueur {
 		this.points_prestiges = points_prestiges;
 		this.ressources = new HashMap();
 		this.initRessourcesMap();
+		this.bonus = new HashMap();
 		
 	}
 	
-	/**
-	 * Affiche une représentation en ligne de commande des ressources d'un joueur.
-	 * 
-	 * 
-	 */
-	public void showRessources() {
-		/*Developper pour avoir qq chose de joli */
-		System.out.println(this.ressources);
-	}
+
 	
 	/**
 	 * Initialise les ressources que possède un joueur.
@@ -120,10 +114,39 @@ public class Joueur {
 	}
 	
 	
+	/**
+	 * 
+	 * @param jeton_bonus
+	 */
+	public void addBonus(Jeton jeton_bonus) {
+		
+		if(this.bonus.getOrDefault(jeton_bonus.couleur(), null) == null) {
+			this.bonus.put(jeton_bonus.couleur(), 1);
+		}else {
+			
+			var incrementation = this.bonus.getOrDefault(jeton_bonus.couleur(), null) + 1;
+			this.bonus.put(jeton_bonus.couleur(), incrementation);
+		}
+	}
 	
 	
-	
-	
+	/**
+	 * 
+	 * @param jeton
+	 * @param initial_val
+	 * @return
+	 */
+	public int newCost(Jeton jeton, int initial_val) {
+		
+		int nouv_val = initial_val;
+		var isBonus = this.bonus.getOrDefault(jeton.couleur(), null);
+		
+		if(isBonus != null) {
+			nouv_val -= isBonus;
+		}
+		
+		return nouv_val;
+	}
 	
 	
 	/**
@@ -158,11 +181,15 @@ public class Joueur {
 		int portefeuille = this.ressources.get(carte.couleur());
 		
 		if(portefeuille >= carte.coût()) {
+			
 			this.addPrestige(carte.points());
 			
-			nouv_val = this.enleveRessource(carte.couleur(), carte.coût());
-			this.ressources.put(carte.couleur(), nouv_val);
+			int nouv_cout = this.newCost(new Jeton(carte.couleur()),carte.coût());
 			
+			
+			nouv_val = this.enleveRessource(carte.couleur(), nouv_cout);
+			this.ressources.put(carte.couleur(), nouv_val);
+			this.addBonus(new Jeton(carte.couleur()));
 			this.cartes += 1;
 			
 		}else {
