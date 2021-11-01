@@ -422,7 +422,7 @@ public class Partie {
 				
 				/*---------- Prendre ressources ------------*/
 				
-				AffichageLigneCommande.showJeton(game.jetons_disponibles);
+				AffichageLigneCommande.showJeton(game.jetons_disponibles, true);
 				
 				System.out.println("\nVeuillez entrer trois noms de couleur");
 				/*on vide le scanner*/
@@ -486,8 +486,6 @@ public class Partie {
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
 Demander si pas gênant d'avoir autant de champs dans une classe
 */
-
-
 
  
 
