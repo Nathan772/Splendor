@@ -231,6 +231,23 @@ public class Joueur {
 		this.ressources.put(jeton.couleur(), quantite_total);
 	}
 	
+	
+	
+	public boolean checkNbJetons() {
+		
+		int count = 0;
+		
+		for(var nb_jet : this.ressources.values()) {
+			count = count + nb_jet;
+		}
+		
+		if(count > 10) {	// mettre une constate pour 10
+			return false;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Ensemble des tests de méthodes pour le type Joueur
 	 */
@@ -281,3 +298,5 @@ public class Joueur {
  * 
  * 
  * */
+
+
