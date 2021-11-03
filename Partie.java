@@ -1,5 +1,3 @@
-package projet;
-
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -440,7 +438,6 @@ public class Partie {
 				
 				AffichageLigneCommande.showJeton(game.jetons_disponibles, true);
 				
-				System.out.println("\nVeuillez entrer trois noms de couleur en les séparant par la touche entrée :");
 				/*on vide le scanner*/
 				/*scanner.nextLine();*/
 				/** Note : Mettre ça dans une boucle for(3)*/
@@ -457,14 +454,44 @@ public class Partie {
 				joueur.addRessource(jeton3, 3);
 				game.enleveRessource(jeton3, 3);*/
 				
-				for(int i= 0; i < 3;i++){
-					  var jeton = Saisie.saisieJeton();	 //On accède à la classe Saisie pour la saisie des jetons
-					  joueur.addRessource(jeton,3);
-					  game.enleveRessource(jeton, 3);
+				
+				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différente"); //Mettre dans Saisie
+				
+				if(scanner.nextInt() == 1) {
+					var jeton = Saisie.saisieJeton();
+					
+					joueur.addRessource(jeton,2);
+				    game.enleveRessource(jeton, 2);
+				    
+				    tour_valide = 1;
+	
+				}else {
+					
+					var already_choosen = new ArrayList<Jeton>();
+					boolean suite;
+					
+					for(int i= 0; i < 3;i++){
+
+						suite = false;
+						
+						while(!suite) {
+							
+							var jeton = Saisie.saisieJeton();	 //On accède à la classe Saisie pour la saisie des jetons
+							  
+							if(!already_choosen.contains(jeton)) {
+								joueur.addRessource(jeton,1);
+								game.enleveRessource(jeton, 1);
+						         already_choosen.add(jeton);
+								 suite = true;
+							}else {
+								System.out.println("\n/ ! \\ Couleur déjà choisie\n");
+							}
+						}
+						  
 					}
-				tour_valide = 1;
+					tour_valide = 1;
+				}
 			}
-			
 			else {
 				/* affichage des infos user et comme cela est automatiquement fait plus tard, on ne fait rien*/
 				/*AffichageLigneCommande.showJoueur(joueur);*/
@@ -479,10 +506,19 @@ public class Partie {
 			if(joueur.points_prestiges >= VICTORY_POINTS && !points_victoires) {
 				points_victoires = true;
 			}
+			
+			
+			
+			if(!joueur.checkNbJetons()) {
+				//Entamer choix des jetons à virer
+			}
+			
 			/*on vide le scanner pour éviter que le tour se termine sans que le joueur n'ait appuyé sur entrée*/
 			scanner.nextLine();
+			
 			if(tour_valide == 1) {
-				System.out.println("\n Veuillez appuyer sur la touche 'Entrée' pour terminer votre tour : \n");
+				
+				System.out.println("\nVeuillez appuyer sur la touche 'Entrée' pour terminer votre tour : \n");
 				scanner.nextLine();	//On part au tour suivant une fois le joueur ayant mis Entrer
 				tour ++;
 			}
@@ -509,7 +545,10 @@ public class Partie {
 ========================================================= Remarque/ Notes générales ========================================================================
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
 Demander si pas gênant d'avoir autant de champs dans une classe
+
+
+
+AU LIEU DE FAIR EUN CHAMPS BONUS, ON VA MPLUTÔT DIRECGTEMENT AJOUTER DABS LES RESSOURCES PERSOS QUAND ON ACHETE LA CARTE
 */
 
- 
 
