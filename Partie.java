@@ -1,5 +1,3 @@
-package projet;
-
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -341,11 +339,17 @@ public class Partie {
 	 * 			
 	 *
 	 */
-	public void enleveRessource(Jeton jeton, int quantite) {
+	public boolean enleveRessource(Jeton jeton, int quantite) {
 		
 		int quantite_total = this.jetons_disponibles.get(jeton.couleur()) - quantite;
 		
+		if(quantite_total < 0) {
+			return false;
+		}
+		
 		this.jetons_disponibles.put(jeton.couleur(), quantite_total);
+		
+		return true;
 	}
 	
 	
@@ -441,33 +445,32 @@ public class Partie {
 				
 				AffichageLigneCommande.showJeton(game.jetons_disponibles, true);
 				
-				/*on vide le scanner*/
-				/*scanner.nextLine();*/
-				/** Note : Mettre ça dans une boucle for(3)*/
-				/*var jeton1 = new Jeton(scanner.nextLine());
-				var jeton2 = new Jeton(scanner.nextLine());
-				var jeton3 = new Jeton(scanner.nextLine());
-				
-				joueur.addRessource(jeton1, 3);*/ 	/** Note : Au lieu de la quantité il faudra mettre le nombre*/
-				/*game.enleveRessource(jeton1, 3);*/   /** Note : On fera plutôt une focntion qui ajoute la ressource au joueur et enlève du plateau*/
-				
-				/*joueur.addRessource(jeton2, 3);
-				game.enleveRessource(jeton2, 3);
-				
-				joueur.addRessource(jeton3, 3);
-				game.enleveRessource(jeton3, 3);*/
 				
 				
 				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
 				System.out.println("(3) Annuler votre action \n");
 				choix = scanner.nextInt();
+				
 				if(choix == 1) {
 					System.out.println("Vous avez choisi de prendre deux jetons de la même couleur, veuillez précisez leur couleur ");
 					
-					var jeton = Saisie.saisieJeton();
+					int valid_choice = 0;
 					
-					joueur.addRessource(jeton,2);
-				    game.enleveRessource(jeton, 2);
+					while(valid_choice != 1) {
+						var jeton = Saisie.saisieJeton();
+						
+						//Faire une fonction qui fait simultanément les deux actions
+						if(!game.enleveRessource(jeton, 2)) {
+							
+							System.out.println("\n/!\\ Il n'y a pas assez de ressources pour effectuer cette action\n");
+							
+						}else {
+							joueur.addRessource(jeton,2);
+							valid_choice += 1;
+						}
+					}
+					
+					
 				    
 				    tour_valide = 1;
 	
@@ -478,17 +481,31 @@ public class Partie {
 					boolean suite;
 					System.out.println("Vous avez choisi de prendre 3 jetons différents, veuillez précisez leur couleur ");
 					System.out.println(" (en les séparant par la touche entrée) : \n");
+					
 					for(int i= 0; i < 3;i++){
+						
 						suite = false;
+						
 						while(!suite) {
 							
 							var jeton = Saisie.saisieJeton();	 //On accède à la classe Saisie pour la saisie des jetons
-							  
+							
+							
+							
+							
 							if(!already_choosen.contains(jeton)) {
+								
+								
+								
+								if(!game.enleveRessource(jeton, 1)) {
+									System.out.println("\n/ ! \\ Pas assez de ressource pour effectuer cette action\n");
+									i --;
+									break;
+								}
+								
 								joueur.addRessource(jeton,1);
-								game.enleveRessource(jeton, 1);
-						         already_choosen.add(jeton);
-								 suite = true;
+						        already_choosen.add(jeton);
+								suite = true;
 							}else {
 								System.out.println("\n/ ! \\ Couleur déjà choisie\n");
 							}
@@ -527,7 +544,23 @@ public class Partie {
 			
 			
 			if(!joueur.checkNbJetons()) {
-				//Entamer choix des jetons à virer
+				
+				while(!joueur.checkNbJetons()) {
+					
+					System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer pour en avoir 10 maximum\n");
+					AffichageLigneCommande.showJeton(joueur.ressources, false);
+					
+					System.out.println("\nJeton");
+					
+					var jeton = scanner.next();
+					
+					System.out.println("Quantite"); 
+					
+					var quantite = scanner.nextInt();
+					
+					joueur.ressources.put(jeton, joueur.enleveRessource(jeton, quantite));
+				}
+				
 			}
 			
 			/*on vide le scanner pour éviter que le tour se termine sans que le joueur n'ait appuyé sur entrée*/
@@ -560,12 +593,19 @@ public class Partie {
 
 /*
 ========================================================= Remarque/ Notes générales ========================================================================
+
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
 Demander si pas gênant d'avoir autant de champs dans une classe
 
+Interface entre cartes developpement et tuiles nobles
 
+AU LIEU DE FAIRE UN CHAMPS BONUS, ON VA MPLUTÔT DIRECGTEMENT AJOUTER DABS LES RESSOURCES PERSOS QUAND ON ACHETE LA CARTE
 
-AU LIEU DE FAIR EUN CHAMPS BONUS, ON VA MPLUTÔT DIRECGTEMENT AJOUTER DABS LES RESSOURCES PERSOS QUAND ON ACHETE LA CARTE
+Ne pas oublier de faire en sorte que si la taille de la pioche vaut 0 alors on ne peut plus tiré de carte, donc partie terminée.
+
+Pour l'affichage, pas oublier que si valeurs à deux chiffres ond oit formatter les cases.
+
 */
+
 
 
