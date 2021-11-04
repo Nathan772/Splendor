@@ -247,6 +247,7 @@ public class Joueur {
 		
 		return true;
 	}
+
 	
 	/**
 	 * Ensemble des tests de méthodes pour le type Joueur
@@ -298,5 +299,6 @@ public class Joueur {
  * 
  * 
  * */
+
 
 
