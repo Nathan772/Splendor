@@ -451,7 +451,9 @@ public class Partie {
 				System.out.println("(3) Annuler votre action \n");
 				choix = scanner.nextInt();
 				
+				
 				if(choix == 1) {
+					
 					System.out.println("Vous avez choisi de prendre deux jetons de la même couleur, veuillez précisez leur couleur ");
 					
 					int valid_choice = 0;
@@ -460,12 +462,13 @@ public class Partie {
 						var jeton = Saisie.saisieJeton();
 						
 						//Faire une fonction qui fait simultanément les deux actions
-						if(!game.enleveRessource(jeton, 2)) {
+						if(game.jetons_disponibles.get(jeton.couleur()) < 4) {
 							
 							System.out.println("\n/!\\ Il n'y a pas assez de ressources pour effectuer cette action\n");
 							
 						}else {
 							joueur.addRessource(jeton,2);
+							game.enleveRessource(jeton, 2);
 							valid_choice += 1;
 						}
 					}
@@ -489,23 +492,22 @@ public class Partie {
 						while(!suite) {
 							
 							var jeton = Saisie.saisieJeton();	 //On accède à la classe Saisie pour la saisie des jetons
-							
-							
-							
+
 							
 							if(!already_choosen.contains(jeton)) {
 								
 								
-								
 								if(!game.enleveRessource(jeton, 1)) {
+										
 									System.out.println("\n/ ! \\ Pas assez de ressource pour effectuer cette action\n");
 									i --;
 									break;
 								}
-								
+									
 								joueur.addRessource(jeton,1);
-						        already_choosen.add(jeton);
-								suite = true;
+							    already_choosen.add(jeton);
+							    suite = true;
+								
 							}else {
 								System.out.println("\n/ ! \\ Couleur déjà choisie\n");
 							}
@@ -606,6 +608,5 @@ Ne pas oublier de faire en sorte que si la taille de la pioche vaut 0 alors on n
 Pour l'affichage, pas oublier que si valeurs à deux chiffres ond oit formatter les cases.
 
 */
-
 
 
