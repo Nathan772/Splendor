@@ -3,12 +3,21 @@ import java.util.Objects;
 /*Demander si utile mettre une record avec un seul champ*/
 public record Jeton(String couleur) {
 	
+	/**
+	 * Constructeur du type Jeton.
+	 * 
+	 * @param couleur
+	 *        Couleur que le Jeton doit avoir.
+	 */
 	public Jeton{
 		Objects.requireNonNull(couleur);
+		//Ici mettre verrification que la couleur est bien existante
+		//On peut donc couper la fonction de Saisie.Jeton() pour faire une qui récupère la couleur
+		//et créer une focntion qui renvoie true si couleur possible et false sinon à mettre ici
 	}
 	
 	/**
-	 * Ecriture human-readable des jetons
+	 * Ecriture human-readable des jetons.
 	 */
 	@Override
 	public String toString() {
@@ -33,7 +42,7 @@ public record Jeton(String couleur) {
 	}
 	
 	/**
-	 * En semble des tests des méthodes du type Jeton
+	 * En semble des tests des méthodes du type Jeton.
 	 */
 	public static void main(String[] args) {
 		

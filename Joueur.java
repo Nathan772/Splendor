@@ -1,18 +1,21 @@
 import java.util.Objects;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Joueur {
-
+	
+	/**
+	 * Champs constituant la classe Joueur
+	 */
 	public int cartes;
 	public final String pseudo;
 	public final int age;
 	public int points_prestiges;
 	public HashMap<String, Integer> ressources;
 	public HashMap<String, Integer> bonus;
+	public ArrayList<CarteDev> reserve;
 
-	
-	
 	/**
 	 * Constructeur du type Joueur
 	 * 
@@ -26,6 +29,7 @@ public class Joueur {
 	 * 		  Nombre de points de prestiges
 	 */
 	public Joueur(String pseudo, int age, int points_prestiges) {
+		
 		Objects.requireNonNull(pseudo, "Pseudo hasn't been given");
 	
 		if(age <= 0) {
@@ -40,14 +44,25 @@ public class Joueur {
 		this.pseudo = pseudo;
 		this.age = age;
 		this.points_prestiges = points_prestiges;
-		this.ressources = new HashMap();
+		this.reserve = new ArrayList<CarteDev>();
+		this.bonus = new HashMap<>();
+		this.ressources = new HashMap<>();
 		this.initRessourcesMap();
-		this.bonus = new HashMap();
+		this.initBonus();
+		
 		
 	}
 	
-
 	
+	public void initBonus() {
+		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc");
+		
+		for(var elem : couleurs) {
+			this.bonus.put(elem, 0);
+		}	
+	}
+	
+
 	/**
 	 * Initialise les ressources que possède un joueur.
 	 */
@@ -96,6 +111,15 @@ public class Joueur {
 		
 		int old_val = this.ressources.get(type_ressource);
 		
+		
+		if(val < this.bonus.get(type_ressource)) {
+			val  = 0;
+		}
+		else {
+			val = val - this.bonus.get(type_ressource);
+		}
+		
+		
 		if(old_val < val) {
 			return 0;
 		}
@@ -104,7 +128,15 @@ public class Joueur {
 	}
 	
 	
-	
+	/**
+	 * Réécriture de la fonction equals, permet de savoir si deux Joueurs sont egaux ou non. Renvoie
+	 * true si deux joueurs sont egaux et false sinon.
+	 * 
+	 * @param player
+	 *        Joueur à comparer.
+	 *        
+	 * @return True si les deux joueurs sont les mêmes et false sinon.
+	 */
 	@Override
 	public boolean equals(Object player) {
 		
@@ -115,38 +147,16 @@ public class Joueur {
 	
 	
 	/**
+	 * Ajoute le bonus du jeton donnée au joueur.
 	 * 
 	 * @param jeton_bonus
+	 *        Jeton considéré comme un bonus à ajouter.
 	 */
 	public void addBonus(Jeton jeton_bonus) {
 		
-		if(this.bonus.getOrDefault(jeton_bonus.couleur(), null) == null) {
-			this.bonus.put(jeton_bonus.couleur(), 1);
-		}else {
-			
-			var incrementation = this.bonus.getOrDefault(jeton_bonus.couleur(), null) + 1;
-			this.bonus.put(jeton_bonus.couleur(), incrementation);
-		}
+		this.ressources.put(jeton_bonus.couleur(), this.ressources.get(jeton_bonus.couleur()) + 1);
 	}
 	
-	
-	/**
-	 * 
-	 * @param jeton
-	 * @param initial_val
-	 * @return
-	 */
-	public int newCost(Jeton jeton, int initial_val) {
-		
-		int nouv_val = initial_val;
-		var isBonus = this.bonus.getOrDefault(jeton.couleur(), null);
-		
-		if(isBonus != null) {
-			nouv_val -= isBonus;
-		}
-		
-		return nouv_val;
-	}
 	
 	
 	/**
@@ -174,26 +184,78 @@ public class Joueur {
 	 * 
 	 * @return true si la carte a bien pu être achetée et false sinon
 	 */
-	public boolean acheteCarte(Carte carte) {
-		/*FAIRE TEST DE PRÉSENCE ETC...*/
+	public boolean acheteCarte(CarteDev carte, Partie game) {
 		
-		int nouv_val;
-		int portefeuille = this.ressources.get(carte.couleur());
-		
-		if(portefeuille >= carte.coût()) {
-			
-			this.addPrestige(carte.points());
-			
-			int nouv_cout = this.newCost(new Jeton(carte.couleur()),carte.coût());
-			
-			
-			nouv_val = this.enleveRessource(carte.couleur(), nouv_cout);
-			this.ressources.put(carte.couleur(), nouv_val);
-			this.addBonus(new Jeton(carte.couleur()));
-			this.cartes += 1;
-			
-		}else {
+		if(!this.checkMoney(carte)) {
 			return false;
+		}
+		
+		
+		this.addPrestige(carte.points());
+		
+		for(var elem : carte.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+			
+			int nouv_val;
+			
+			nouv_val = this.enleveRessource(name, val);
+			this.ressources.put(name, nouv_val);
+			
+			game.jetons_disponibles.put(name,  game.jetons_disponibles.get(name) + nouv_val);
+			
+		}
+		
+		this.addBonus(new Jeton(carte.couleur()));
+		this.cartes += 1;
+		
+		return true;
+	}
+	
+	
+	
+	
+	public boolean isNobleVisiting(ArrayList<Tuile> nobles_visiting, ArrayList<Tuile> tuiles_board){
+		
+		for(var noble : tuiles_board) {
+			
+			
+			var is_visiting = true;
+			
+			for(var couleur_price : noble.cout().entrySet()) {
+				var name_price = couleur_price.getKey();
+				var val_price = couleur_price.getValue();
+				
+				if(!(this.bonus.get(name_price) >= val_price)) {
+					is_visiting = false;
+				}
+			}
+			
+			if(is_visiting) {
+				nobles_visiting.add(noble);
+			}
+			
+		}
+		
+		if(nobles_visiting.size() != 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	private boolean checkMoney(CarteDev card) {
+		
+		for(var elem : card.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+			
+			if(this.ressources.get(name) < val) {
+				return false;
+			}
 		}
 		
 		return true;
@@ -232,7 +294,11 @@ public class Joueur {
 	}
 	
 	
-	
+	/**
+	 * Vérifie que le nombre de jetons d'un joueur ne dépasse pas 10.
+	 * 
+	 * @return True si l'utilisateur possèdent 10 jetons ou moins et false sinon
+	 */
 	public boolean checkNbJetons() {
 		
 		int count = 0;
@@ -248,6 +314,32 @@ public class Joueur {
 		return true;
 	}
 
+	
+	
+	
+	
+	public boolean reserveCarte(CarteDev carte, HashMap<String, Integer> ressources_jeu) {
+		
+		Objects.requireNonNull(carte, "Card given to keep is null");
+		
+		if(this.reserve.size() == 3) {
+			return false;
+		}
+		
+		this.reserve.add(carte);
+		
+		
+		if(ressources.get("Jaune") > 0) {
+			
+			this.addRessource(new Jeton("Jaune"), 1);			
+		}
+		
+		return true;
+	}
+	
+	
+	
+	
 	
 	/**
 	 * Ensemble des tests de méthodes pour le type Joueur
@@ -289,7 +381,7 @@ public class Joueur {
  * 
  * 
  * 
- * 
+ * Supprimer les ajoute de bonus, et champs bonus, on fera els calculs directement sur les ressources du joueur.
  * 
  * 
  * 
@@ -299,6 +391,7 @@ public class Joueur {
  * 
  * 
  * */
+
 
 
 
