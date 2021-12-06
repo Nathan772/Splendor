@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Partie {
+public class Partie implements TypePartie{
 	
 	private static final int VICTORY_POINTS = 15;
 	
@@ -546,19 +546,23 @@ public class Partie {
 				
 				/*--------- Achat de cartes --------------*/
 				AffichageLigneCommande.showBoard(game);
+				/* on oblige l'utilisateur a acheter une carte face visible si il est en mode de jeu 1*/
+				var choix_mode_achat = 1;
 				
 				
-				
-				
-				System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
-				
-				var choix_mode_achat = scanner.nextInt();
-				
-				if(choix_mode_achat == 2) {
+				if(mode_jeu == 2) {
+					System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
+					choix_mode_achat = scanner.nextInt();
+				}
 					
+				
+				if(choix_mode_achat == 2 ) {
+					
+					
+					System.out.println("Affichage de la réserve qui fait tout buguer");
+					System.out.println(joueur.reserve);
 					System.out.println("\nChoisissez votre numero de carte\n");
 					int carte_numero = scanner.nextInt();
-					
 					if(joueur.acheteCarte(joueur.reserve.get(carte_numero), game)) {
 						tour_valide = 1;	
 					}
@@ -857,8 +861,8 @@ public class Partie {
 		
 		System.out.println("\nFÉLICIATIONS !!!!!!  " + game.isWinner()); // Fin de partie
 	
-		
 	}
+	
 	
 }
 
@@ -870,19 +874,10 @@ public class Partie {
 
 /*
 ========================================================= Remarque/ Notes générales ========================================================================
-
 Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
 Demander si pas gênant d'avoir autant de champs dans une classe
-
 Interface entre cartes developpement et tuiles nobles
-
 AU LIEU DE FAIRE UN CHAMPS BONUS, ON VA MPLUTÔT DIRECGTEMENT AJOUTER DABS LES RESSOURCES PERSOS QUAND ON ACHETE LA CARTE
-
 Ne pas oublier de faire en sorte que si la taille de la pioche vaut 0 alors on ne peut plus tiré de carte, donc partie terminée.
-
 Pour l'affichage, pas oublier que si valeurs à deux chiffres ond oit formatter les cases.
-
 */
-
-
-  
