@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Partie implements TypePartie{
+public class Partie {
 	
 	private static final int VICTORY_POINTS = 15;
 	
