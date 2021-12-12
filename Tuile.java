@@ -1,13 +1,20 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
+
+/**
+ * 
+ * @author dylandejesus
+ */
 record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) implements Carte{
 	
+	/**
+	 *
+	 * 
+	 * @param line
+	 * 
+	 * @return 
+	 */
 	public static Tuile fromText(String line) {
 		
 		var couleurs = List.of("Blanc", "Rouge", "Bleu", "Noir", "Vert");
@@ -28,6 +35,41 @@ record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) i
 		return new Tuile(tab[1], cout,  Integer.parseInt(tab[0]));
 	}
 	
+	
+	
+	
+	private static String chaineFormatte(String name_card) {	//FONCTION QUI SERAIT À METTRE DANS UNE INTERFACE DE CARTEDEV		
+		
+		if(name_card == null) {
+			return "|        mine        |\n";
+		}
+		int nb_espaces = (20 - name_card.length()) / 2;
+		var chaine = new StringBuilder();
+		var espaces = new StringBuilder();
+		
+		chaine.append("|");
+		
+		
+		for(var i = 0; i < nb_espaces ;i++) {
+			espaces.append(" ");
+		}
+		
+		chaine.append(espaces).append(name_card).append(espaces);
+		
+		if(name_card.length() % 2 == 1) {
+			chaine.append(" ");
+		}
+		
+		chaine.append("|\n");
+		
+		return chaine.toString();
+	}
+	
+	
+	
+	/**
+	 * String représentation of a noble.
+	 */
 	@Override
 	public String toString() {
 
@@ -35,18 +77,26 @@ record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) i
 		var cout = new StringBuilder();
 		var separator = "| ";
 	
-		var first_line = "|  " + this.points_prestiges + "                  |\n";
+		var first_line = "|  " + this.points_prestiges + "                 |\n";
 		var vide = "|                    |\n";
-		var name = "|        " + this.name + "        |\n";
+		var name = chaineFormatte(this.name);
+		var spaces_separator = "";
 		
 		for(var elem : this.cout().entrySet()) {
 			
 			var couleur_name = elem.getKey();
 			var couleur_val = elem.getValue();
 			
-			cout.append(separator).append(couleur_name).append(": ").append(couleur_val).append("            |\n").append(vide);
+			if(couleur_name.length() == 5) {
+				spaces_separator = "           |\n";
+			}else {
+				spaces_separator = "            |\n";
+			}
+			
+			cout.append(separator).append(couleur_name).append(": ").append(couleur_val).append(spaces_separator).append(vide);
 		}
 		
 		return ligne + vide + first_line + vide + vide + name + vide + vide + cout + vide + ligne;
 	}
 }
+
