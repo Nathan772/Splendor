@@ -3,30 +3,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+/**
+ * 
+ * @author dylandejesus
+ *
+ */
 public class Joueur {
 	
 	/**
 	 * Champs constituant la classe Joueur
 	 */
-	public int cartes;
-	public final String pseudo;
-	public final int age;
-	public int points_prestiges;
-	public HashMap<String, Integer> ressources;
-	public HashMap<String, Integer> bonus;
-	public ArrayList<CarteDev> reserve;
+	private int cartes;
+	private final String pseudo;
+	private final int age;
+	private int points_prestiges;
+	private HashMap<String, Integer> ressources;
+	private HashMap<String, Integer> bonus;
+	private ArrayList<CarteDev> reserve;
 
 	/**
-	 * Constructeur du type Joueur
+	 * Constructor of the type Joueur
 	 * 
 	 * @param pseudo
-	 * 		  Nom du joueur
+	 * 		 Player name
 	 * 
 	 * @param age
-	 * 		  Age du joueur
+	 * 		  Player age
 	 * 
 	 * @param points_prestiges
-	 * 		  Nombre de points de prestiges
+	 * 		  Points value
 	 */
 	public Joueur(String pseudo, int age, int points_prestiges) {
 		
@@ -54,7 +60,62 @@ public class Joueur {
 	}
 	
 	
-	public void initBonus() {
+	
+	/**
+	 * Constructor of the type Joueur. Is called if we create a player without giving any Points value.
+	 *The points value are initialized with value 0.
+	 * 
+	 * @param pseudo
+	 *        Player name
+	 *        
+	 * @param age
+	 *        Age of the player
+	 */
+	public Joueur(String pseudo, int age) {
+		this(pseudo, age, 0);
+	}
+	
+	
+	
+	
+	
+	public int cartes() {
+		return this.cartes;
+	}
+	
+	public String pseudo() {
+		return this.pseudo;
+	}
+	
+	
+	public int age() {
+		return this.age;
+	}
+	
+	
+	public int points_prestiges() {
+		return this.points_prestiges;
+	}
+	
+	public HashMap<String, Integer> ressources() {
+		return this.ressources;
+	}
+	
+	public HashMap<String, Integer> bonus() {
+		return this.bonus;
+	}
+	
+	
+	public ArrayList<CarteDev> reserve(){
+		return this.reserve;
+	}
+	
+	
+	
+	/**
+	 * Initialize all the coloured tokens bonus (earned by the player during the game). All the tokens start with the value 0. 
+	 */
+	private void initBonus() {
 		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc");
 		
 		for(var elem : couleurs) {
@@ -64,9 +125,9 @@ public class Joueur {
 	
 
 	/**
-	 * Initialise les ressources que possède un joueur.
+	 * Initialize all the couloured tokens (those which represent the ressources of the player). All the tokens start with value 0.
 	 */
-	public void initRessourcesMap() {
+	private void initRessourcesMap() {
 		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc", "Jaune");
 		
 		for(var elem : couleurs) {
@@ -75,29 +136,17 @@ public class Joueur {
 	}
 	
 	/**
-	 * Représentation textuelle d'un joueur.
+	 * String representation of a Player.
 	 */
 	@Override
 	public String toString() {
 		return "Joueur [pseudo= "+ this.pseudo + ", age= " + this.age + ", prestige= " + points_prestiges + ", ressources=" + this.ressources +"]"; 
 	}
 
-	/**
-	 * Constructeur du type Joueur. Est appelée si on crée un joueur sans donner de points de prestiges.
-	 * Les points seront donc initialisés à 0.
-	 * 
-	 * @param pseudo
-	 *        Nom du joueur
-	 *        
-	 * @param age
-	 *        Age du joueur
-	 */
-	public Joueur(String pseudo, int age) {
-		this(pseudo, age, 0);
-	}
+	
 	
 	/**
-	 * Retire la quantité définie d'une ressource du joueur.
+	 * Remove 
 	 * 
 	 * @param type_ressource
 	 *        Nom d'une des couleurs représentant une ressource du jeu
@@ -107,11 +156,11 @@ public class Joueur {
 	 * 
 	 * @return Nouvelle quantité de la ressource restante
 	 */
-	public int enleveRessource(String type_ressource, int val) {
+	public int enleveRessource(String type_ressource, int val, HashMap<String, Integer> ressources_banque) {
 		
-		int old_val = this.ressources.get(type_ressource);
+		int old_val = this.ressources.get(type_ressource);	//Ressources of the player
 		
-		
+		//New val taking in count the bonus
 		if(val < this.bonus.get(type_ressource)) {
 			val  = 0;
 		}
@@ -121,6 +170,9 @@ public class Joueur {
 		
 		
 		if(old_val < val) {
+			
+			ressources_banque.put("Jaune", ressources_banque.get("Jaune") + ((-1)*(old_val - val)));	//Jokers rendus à la banque
+			this.ressources.put("Jaune", this.ressources.get("Jaune") - ((-1)*(old_val - val)));	//Joker retirés au joueur
 			return 0;
 		}
 		
@@ -152,9 +204,9 @@ public class Joueur {
 	 * @param jeton_bonus
 	 *        Jeton considéré comme un bonus à ajouter.
 	 */
-	public void addBonus(Jeton jeton_bonus) {
+	private void addBonus(Jeton jeton_bonus) {
 		
-		this.ressources.put(jeton_bonus.couleur(), this.ressources.get(jeton_bonus.couleur()) + 1);
+		this.bonus.put(jeton_bonus.couleur(), this.bonus.get(jeton_bonus.couleur()) + 1);
 	}
 	
 	
@@ -186,7 +238,7 @@ public class Joueur {
 	 */
 	public boolean acheteCarte(CarteDev carte, Partie game) {
 		
-		if(!this.checkMoney(carte)) {
+		if(!this.checkMoney(carte, game)) {
 			return false;
 		}
 		
@@ -200,10 +252,10 @@ public class Joueur {
 			
 			int nouv_val;
 			
-			nouv_val = this.enleveRessource(name, val);
+			nouv_val = this.enleveRessource(name, val, game.jetons_disponibles());
 			this.ressources.put(name, nouv_val);
 			
-			game.jetons_disponibles.put(name,  game.jetons_disponibles.get(name) + nouv_val);
+			game.jetons_disponibles().put(name,  game.jetons_disponibles().get(name) + nouv_val);
 			
 		}
 		
@@ -214,8 +266,12 @@ public class Joueur {
 	}
 	
 	
-	
-	
+	/**
+	 * 
+	 * @param nobles_visiting
+	 * @param tuiles_board
+	 * @return
+	 */
 	public boolean isNobleVisiting(ArrayList<Tuile> nobles_visiting, ArrayList<Tuile> tuiles_board){
 		
 		for(var noble : tuiles_board) {
@@ -245,8 +301,59 @@ public class Joueur {
 	}
 	
 	
+	/**
+	 * 
+	 * @param card
+	 * @return
+	 */
+	/*private boolean checkMoney(CarteDev card, Partie game) {
+		
+		var val_joker = game.jetons_disponibles().get("Jaune");
+		
+		for(var elem : card.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+			
+			if(this.ressources.get(name) < val) {
+				
+				if(val_joker < 0) {
+					return false;
+				}
+				val_joker = val_joker - (val - this.ressources.get(name));
+			}
+		}
+		
+		return true;
+	}*/
+		/* dernière version de checkMoney*/
+		private boolean checkMoney(CarteDev card, Partie game) {
+		
+		var val_joker = this.ressources().get("Jaune");
+		
+		for(var elem : card.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+			
+			if(this.ressources.get(name) < val) {
+				
+				if(val_joker <= 0) {
+					return false;
+				}
+				if(val_joker + this.ressources.get(name) < val){
+					return false;
+				}
+				val_joker = val_joker - (val - this.ressources.get(name));
+			}
+		}
+		
+		return true;
+	}
 	
-	private boolean checkMoney(CarteDev card) {
+	/* version sans le joker*/
+		/*
+	private boolean checkMoney(CarteDev card, Partie game) {
 		
 		for(var elem : card.coût().entrySet()) {
 			
@@ -259,7 +366,7 @@ public class Joueur {
 		}
 		
 		return true;
-	}
+	}*/
 	
 	/**
 	 * Ajout d'une quantite définie de points de prestiges au joueur
@@ -315,9 +422,12 @@ public class Joueur {
 	}
 
 	
-	
-	
-	
+	/**
+	 * 
+	 * @param carte
+	 * @param ressources_jeu
+	 * @return
+	 */
 	public boolean reserveCarte(CarteDev carte, HashMap<String, Integer> ressources_jeu) {
 		
 		Objects.requireNonNull(carte, "Card given to keep is null");
@@ -339,8 +449,6 @@ public class Joueur {
 	
 	
 	
-	
-	
 	/**
 	 * Ensemble des tests de méthodes pour le type Joueur
 	 */
@@ -359,38 +467,13 @@ public class Joueur {
 		System.out.println(j1.points_prestiges);
 		
 		j1.addPrestige(-10);
-		System.out.println(j1.points_prestiges);
-		
+		System.out.println(j1.points_prestiges);	
 		
 	}
 
 }
 
 
-
-
-
-
-/*
- * 
- * 
- * 
- * 
- * 
- * Verifier qu'il n'y a pas deux joueurs identiques (pas le même nom)
- * 
- * 
- * 
- * Supprimer les ajoute de bonus, et champs bonus, on fera els calculs directement sur les ressources du joueur.
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * */
 
 
 
