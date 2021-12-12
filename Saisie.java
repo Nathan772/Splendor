@@ -34,9 +34,16 @@ public class Saisie {
 	public static Joueur saisieJoueur(){
 		
 		Scanner scanner = new Scanner(System.in);
-		var joueur = new Joueur(scanner.next(), Integer.parseInt(scanner.next()));
-
+		Joueur joueur = null;
 		
+		do{
+				try {
+					joueur = new Joueur(scanner.next(), Integer.parseInt(scanner.next()));
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez un nom avec des lettres et un âge avec des nombres, pas des lettres !");
+			}
+		}while(joueur == null);
+		System.out.println("joueur enregistré avec succès !");
 		return joueur;
 	}
 	
