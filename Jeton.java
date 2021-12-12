@@ -1,3 +1,4 @@
+
 import java.util.Objects;
 
 /*Demander si utile mettre une record avec un seul champ*/
@@ -17,7 +18,7 @@ public record Jeton(String couleur) {
 	}
 	
 	/**
-	 * Ecriture human-readable des jetons.
+	 * String representation of a Jeton.
 	 */
 	@Override
 	public String toString() {
