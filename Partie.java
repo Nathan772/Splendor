@@ -5,30 +5,35 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Partie {
+
+/**
+ * 
+ * @author dylandejesus
+ */
+public class Partie{
 	
 	private static final int VICTORY_POINTS = 15;
 	
-	public ArrayList<Joueur> joueurs;
+	private ArrayList<Joueur> joueurs;
 	private HashMap <Integer, List<CarteDev>> pioche;
-	private ArrayList<CarteDev> piocheTuile;
 	private int taille_pioche;
-	public HashMap <Integer, List<CarteDev>> board;
-	public HashMap<String, Integer> jetons_disponibles;	/*On met une Map pour représenter les piles de jetons*/
-	public ArrayList<Tuile> tuiles_board;
+	private HashMap <Integer, List<CarteDev>> board;
+	private HashMap<String, Integer> jetons_disponibles;	/*On met une Map pour représenter les piles de jetons*/
+	private ArrayList<Tuile> tuiles_board;
+
 
 	
-	
 	/**
-	 * Constructeur du type Partie.
+	 * Constructor of the type Partie.
 	 */
 	public Partie() {
-		joueurs = new ArrayList<Joueur>();
 		
+		joueurs = new ArrayList<Joueur>();
 		
 		// Pioche des 4 niveaux de développement
 		pioche = new HashMap<>();
@@ -49,10 +54,46 @@ public class Partie {
 		tuiles_board = new ArrayList<>();
 	}
 	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<Joueur> joueurs() {
+		return this.joueurs;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public HashMap<Integer, List<CarteDev>> board() {
+		return this.board;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public HashMap<String, Integer> jetons_disponibles() {
+		return this.jetons_disponibles;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<Tuile> tuiles_board() {
+		return this.tuiles_board;
+	}
+	
+	
+	
+	
 	/**
 	 * Initialise une partie. Correspond à la préparation du plateau.
 	 */
-	public void initialisePartie(int mode) {
+	private void initialisePartie(int mode) {
 		
 		this.initialiseOrdreJoueurs();
 		this.initialiseJetons();
@@ -80,12 +121,16 @@ public class Partie {
 			this.piocheFourCards(3);
 			
 			this.initialiseTuiles();
-			
 		}
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @param path
+	 * @param tuiles
+	 * @throws IOException
+	 */
 	private void loadTuiles(Path path, ArrayList<Tuile> tuiles) throws IOException {
 		Objects.requireNonNull(path, "File path given is null");
 		
@@ -104,6 +149,10 @@ public class Partie {
 		} // appelle reader.close()
 	}
 	
+	
+	/**
+	 * 
+	 */
 	private void  initialiseTuiles() {
 	
 		
@@ -134,7 +183,7 @@ public class Partie {
 	/**
 	 * Modifie l'odre de la liste des joueurs afin que celui qui commence soit le joueur, le plus jeune.
 	 */
-	public void initialiseOrdreJoueurs() {
+	private void initialiseOrdreJoueurs() {
 		
 		int i = 0;
 		ArrayList<Joueur> extrait = new ArrayList<Joueur>();
@@ -172,7 +221,7 @@ public class Partie {
 	 *        
 	 * @return Indice du joueur le plus jeune
 	 */
-	public static int findYounger(ArrayList<Joueur> joueurs) {
+	private static int findYounger(ArrayList<Joueur> joueurs) {
 		
 		int i = 0;
 		int indice_younger = -1;
@@ -181,7 +230,7 @@ public class Partie {
 		
 		for(var joueur : joueurs) {
 			
-			if(younger.age > joueur.age) {
+			if(younger.age() > joueur.age()) {
 				younger = joueur;
 				indice_younger = i;
 			}
@@ -196,7 +245,7 @@ public class Partie {
 	/**
 	 * Initialise les jetons disponibles d'une partie. Il y a 7 jetons par couleur
 	 */
-	public void initialiseJetons() {
+	private void initialiseJetons() {
 		this.jetons_disponibles.put("Rouge", 7);	/*On mettra une constante dans la classe pour 7 jetons*/
 		this.jetons_disponibles.put("Vert", 7);
 		this.jetons_disponibles.put("Bleu", 7);
@@ -209,7 +258,7 @@ public class Partie {
 	 * Initialise la pioche consituée de cartes de manière aléatoire. Chaque carte possède une des couleurs
 	 * suivantes : Rouge, Vert, Noir, Bleu, Blanc, Jaune, Blanc.
 	 */
-	public void initialisePioche() {
+	private void initialisePioche() {
 		
 		/*Les cartes de la pioche ne peuvent que possèder ces couleurs*/
 		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc");
@@ -237,7 +286,7 @@ public class Partie {
 	 * @param  index_supp
 	 * 		   Indice de la carte à remplacer dans la liste
 	 */
-	public CarteDev piocheOneCard(int ligne, int index_supp) {
+	private CarteDev piocheOneCard(int ligne, int index_supp) {
 		
 		int derniere_carte = this.pioche.get(ligne).size() - 1;	
 
@@ -245,6 +294,8 @@ public class Partie {
 
 		
 		this.board.get(ligne).set(index_supp, card_picked);
+		
+		this.taille_pioche -= 1;
 		
 		return card_picked;
 		
@@ -254,7 +305,7 @@ public class Partie {
 	/**
 	 * Pioche 4 cartes developpement dans la pioche.
 	 */
-	public void piocheFourCards(int ligne) {
+	private void piocheFourCards(int ligne) {
 		
 		for(int i  =0; i < 4 ;i++) {
 			this.piocheOneCard(ligne, i);
@@ -269,7 +320,7 @@ public class Partie {
 	 * @param  player
 	 * 		   Joueur a ajouté
 	 */
-	public void addPlayer(Joueur player) {
+	private void addPlayer(Joueur player) {
 		this.joueurs.add(player);
 	}
 	
@@ -279,7 +330,7 @@ public class Partie {
 	 * possèdent le même nombre de points, on prend celui qui possède le moins
 	 * de cartes.
 	 */
-	public Joueur isWinner() {
+	private Joueur isWinner() {
 		
 		ArrayList<Joueur> classement = new ArrayList<Joueur>();
 		int nb_best_players = 0;
@@ -287,7 +338,7 @@ public class Partie {
 		
 		for(var joueur : this.joueurs) {
 			
-			if(joueur.points_prestiges >= VICTORY_POINTS) {
+			if(joueur.points_prestiges() >= VICTORY_POINTS) {
 				classement.add(joueur);
 				nb_best_players += 1;
 			}
@@ -323,14 +374,14 @@ public class Partie {
 	 * @param  classement
 	 * 		   Liste des joueurs
 	 */
-	public static Joueur topClassement(ArrayList<Joueur> classement) {
+	private static Joueur topClassement(ArrayList<Joueur> classement) {
 		
 		Joueur best_player = classement.get(0);
 		int i = 0;
 		
-		while(classement.get(i).points_prestiges == best_player.points_prestiges && i < classement.size() - 1) {
+		while(classement.get(i).points_prestiges() == best_player.points_prestiges() && i < classement.size() - 1) {
 			
-			if(classement.get(i).cartes < best_player.cartes) {
+			if(classement.get(i).cartes() < best_player.cartes()) {
 				best_player = classement.get(i);
 			}
 			
@@ -387,9 +438,9 @@ public class Partie {
 	 * @param  j2
 	 *         Joueur 2
 	 */
-	public static boolean compareJoueur(Joueur j1, Joueur j2){
+	private static boolean compareJoueur(Joueur j1, Joueur j2){
 		
-		if(j1.points_prestiges < j2.points_prestiges) {
+		if(j1.points_prestiges() < j2.points_prestiges()) {
 			return true;
 		}
         return false;
@@ -406,7 +457,7 @@ public class Partie {
 	 * @param  size
 	 * 		   Taille de la liste 
 	 */
-	public static boolean sortClassement(ArrayList<Joueur> classement, int size) {
+	private static boolean sortClassement(ArrayList<Joueur> classement, int size) {
 		
 		for(var i = 0; i < size ; i++){
             swap(classement, i, indexOfMin(classement, i, size));     /*On va jusqu'à array.length car indexOfMin() va dans l'intervalle [debut, fin[*/
@@ -426,7 +477,7 @@ public class Partie {
 	 * 			
 	 *
 	 */
-	public boolean enleveRessource(Jeton jeton, int quantite) {
+	private boolean enleveRessource(Jeton jeton, int quantite) {
 		
 		int quantite_total = this.jetons_disponibles.get(jeton.couleur()) - quantite;
 		
@@ -439,8 +490,12 @@ public class Partie {
 		return true;
 	}
 	
-	
-	public void loadDeck(Path path) throws IOException {
+	/**
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	private void loadDeck(Path path) throws IOException {
 		
 		Objects.requireNonNull(path, "File path given is null");
 		
@@ -455,12 +510,201 @@ public class Partie {
 
 				 this.pioche.get(carte.niveau()).add(carte);
 				 
+				 this.taille_pioche += 1;
+				 
 			 }
 		} // appelle reader.close()
 		
 		Collections.shuffle(this.pioche.get(1));
 		Collections.shuffle(this.pioche.get(2));
 		Collections.shuffle(this.pioche.get(3));
+	}
+	
+	
+	/**
+	 * 
+	 * @param noble_chosen
+	 */
+	private void efface_noble(Tuile noble_chosen) {
+		
+		var iterator = this.tuiles_board.iterator();
+		while(iterator.hasNext()) {
+			var tuile1 = iterator.next();
+			if(tuile1.equals(noble_chosen)) {
+				System.out.println("Vous avez choisi : " + tuile1.name() + " ");
+				iterator.remove();
+			}
+				
+		}
+	}
+	/* permet de choisir un mode de jeu*/
+	private static int choix_mode() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+		System.out.println("Quel mode de jeu (1 ou 2) choisissez vous ?  => ");
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez un nombre entre 1 et 2 !");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix != 1 && choix != 2);
+		return choix;
+	}
+	/* permet de choisir le nombre de joueur qui participeront*/
+	private static int choix_nb_joueurs() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+			System.out.println("Combien de joueurs participent à la partie (choisissez un nombre entre 2 et 4) ?");
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez un nombre entre 2 et 4 !");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix < 2 || choix > 4);
+		return choix;
+	}
+	
+	/* permet de choisir une action parmi celle proposée*/
+	private static int choix_action() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+			System.out.println("Quelle action voulez-vous faire (entre 1 et 4) ?");
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix < 1 || choix > 4);
+		return choix;
+	}
+	
+	/* permet de choisir le type de carte que l'on souhaite acheteer*/
+	private static int choix_achat() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+			System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez le nombre 1 ou 2 !");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix != 1 && choix != 2);
+		return choix;
+	}
+	
+	/* permet de choisir entre différents nombre de jetons*/
+	private static int choix_nb_jetons() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Entrez le nombre 1, 2 ou 3!");
+				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
+				System.out.println("(3) Annuler votre action \n");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix != 1 && choix != 2 && choix != 3);
+		return choix;
+	}
+	private static String[] choix_carte() {
+		Scanner scan = new Scanner(System.in);
+		int succes = -1;
+		String[] tab = {"a"};
+		do{
+				try {
+					tab = scan.next().split("-");
+					/* test pour voir si les valeurs récupérées sont au bon format, en cas d'erreur on retry*/
+					var choosen_card = Integer.parseInt(tab[1]) - 1;
+					var ligne_choosen = Integer.parseInt(tab[0]);
+					succes = 1;
+			}catch(Exception e) {
+				System.out.println("Erreur : veuillez écrire au format : Niveau - N° Carte ");
+				/*scan.next();*/
+				succes = -1;
+			}
+		}while(succes == -1);
+		
+		return tab;
+		
+	}
+	private static int choix_reserver_carte() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("La valeur que vous avez entré est incorrecte. Veuillez réessayer ");
+				System.out.println("1) Réserver une carte du board\n2) Réserver une carte d'une des pioches\n\n");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix != 1 && choix != 2);
+		return choix;
+	}
+	
+	private static int carte_reserve_valide_2arg(Partie game, int niveau_carte, int num_carte ) {
+			try {
+				game.board.get(niveau_carte).get(num_carte);
+			}catch(Exception e) {
+				return 0;
+			}
+			return 1;
+		
+	}
+	
+	private static int carte_reserve_valide_1arg(Partie game, int niveau_carte) {
+		try {
+			game.pioche.get(niveau_carte).get(game.pioche.size() - 1);
+		}catch(Exception e) {
+			return 0;
+		}
+		return 1;
+}
+	
+	private static int numero_carte_valide() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+			try {
+				choix = scan.nextInt();
+				return choix;
+			}catch(Exception e) {
+			System.out.println("Erreur : Veuillez entrer un numero de carte valide : ");
+			}
+		}while(true);
+	
+}
+	
+	/* permet de choisir entre différents niveaux de carte*/
+	private static int choix_niv_carte() {
+		Scanner scan = new Scanner(System.in);
+		int choix;
+		do{
+				try {
+				choix = scan.nextInt();
+			}catch(Exception e) {
+				System.out.println("Erreur : Veuillez entrer un niveau de carte entre 1 et 3");
+				scan.next();
+				choix = -1;
+			}
+		}while(choix != 1 && choix != 2 && choix != 3);
+		return choix;
 	}
 	
 	
@@ -477,36 +721,28 @@ public class Partie {
 		int tour = 0;
 		int choix;
 		int choosen_card;
-		
+		var scanner = new Scanner(System.in);
 		int ligne_choosen = 1;
 		/* indique si le tour du joueur c'est bien passé ou s'il faut le faire rejouer car il aurait réalisé une action impossible*/
 		/* 0 = le joueur a simplement demandé ses infos, c'est à nouveau à lui de jouer, 1 = le tour précédent s'est bien passé, -1 = problème lors du tour précédent*/
 		int tour_valide = 1;
 		boolean points_victoires = false; 
-		var scanner = new Scanner(System.in);	/*Lire les valeurs d el'utilisateur*/
+		/*Lire les valeurs d el'utilisateur*/
 		
 		Partie game = new Partie();
+
+		mode_jeu = choix_mode();
 		
-		
-		
-		System.out.println("Quel mode de jeu (1 ou 2) choisissez vous ?  => ");
-		
-		if(scanner.next().equals("2")) {
-			mode_jeu = 2;
-			
-			System.out.println("Combien de joueurs (entre 2 et 4)  participent à la partie ? => ");
-			nb_joueurs = scanner.nextInt();
+		if(mode_jeu == 2) {
+			nb_joueurs = choix_nb_joueurs();
 		}
-		
-		
 		
 		/*Enregistre les deux joueurs*/
 		
 		for(int i = 1; i <= nb_joueurs ;i++) {
 			System.out.println("Veuillez entrer le nom et l'âge du joueur " + i);
 		
-			var joueur1 = Saisie.saisieJoueur();
-				
+			var joueur1 = Saisie.saisieJoueur();	
 			game.addPlayer(joueur1);
 		}
 		
@@ -519,17 +755,17 @@ public class Partie {
 		/*Tant que 15 points de prestiges n'ont pas été atteint avec fin du tour*/
 		
 		while((!points_victoires) || (tour % game.joueurs.size() != 0)) {
-			
 			joueur = game.joueurs.get(tour % nb_joueurs); 	
 			
 			
 			if(tour_valide != 0)
 				AffichageLigneCommande.showPlateau(game, mode_jeu);
+				
 			
 			if(tour_valide == -1)
-				System.out.println("C'est de nouveau au tour de " + joueur.pseudo + " car il a essayé de faire une action impossible au tour précédent ! \n");
+				System.out.println("C'est de nouveau au tour de " + joueur.pseudo() + " car il a essayé de faire une action impossible au tour précédent ! \n");
 
-			System.out.println("ooooooooooooooooooooooo TOUR DU JOUEUR : " + joueur.pseudo + " ooooooooooooooooooooooo\n");
+			System.out.println("ooooooooooooooooooooooo TOUR DU JOUEUR : " + joueur.pseudo() + " ooooooooooooooooooooooo\n");
 			
 			
 			
@@ -538,8 +774,8 @@ public class Partie {
 			if(mode_jeu != 1) {
 				System.out.println("(4) Réserver une carte");
 			}
-			
-			choix = scanner.nextInt();
+			choix = choix_action();
+			/*choix = scanner.nextInt();*/
 			
 			
 			if(choix == 1) {
@@ -551,53 +787,79 @@ public class Partie {
 				
 				
 				if(mode_jeu == 2) {
-					System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
-					choix_mode_achat = scanner.nextInt();
+					/*System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");*/
+					choix_mode_achat = choix_achat();
 				}
 					
 				
-				if(choix_mode_achat == 2 ) {
-					
-					
-					System.out.println("Affichage de la réserve qui fait tout buguer");
-					System.out.println(joueur.reserve);
-					System.out.println("\nChoisissez votre numero de carte\n");
-					int carte_numero = scanner.nextInt();
-					if(joueur.acheteCarte(joueur.reserve.get(carte_numero), game)) {
-						tour_valide = 1;	
+				if(choix_mode_achat == 2) {
+					/* cas où la partie avec les cartes réservées n'est pas vide*/
+					if(joueur.reserve().size() > 0) {
+						System.out.println("\nChoisissez votre numero de carte parmi les suivantes \n");
+						AffichageLigneCommande.showReserved(joueur);
+						var carte_numero = numero_carte_valide();
+						/* cas où le numéro de la carte est valide*/
+						if(carte_numero <= joueur.reserve().size() && carte_numero >= 0) { 
+							/* cas où l'utilisateur peut payer */
+							if(joueur.acheteCarte(joueur.reserve().get(carte_numero-1), game)) {
+								System.out.println("\n Votre achat a été réalisé avec succès ! \n");
+								tour_valide = 1;	
+							}
+							/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent
+							 *  de force car il ne peut pas se payer cette carte*/
+							else {
+								tour_valide = -1;
+								System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
+							}	
+						}
+						/* cas où le numéro de la carte n'est pas valide*/
+						else {
+							System.out.println("\nCe numéro de carte n'existe pas !\n");
+							tour_valide = -1;
+						}
 					}
-					/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent de force car il ne peut pas se payer cette carte*/
+					/* cas où la partie avec les cartes réservées est vide*/
 					else {
 						tour_valide = -1;
-						System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
-					}	
+						System.out.println("\nVous n'avez pas réservé de carte ! Cette action est donc impossible ! \n");
+						System.out.println("\nVeuillez réserver une carte avant de vouloir acheter une carte réservée ! \n");
+					}
 				}
 				
 				else {
 					System.out.println("\n\nChoisissez le numéro de la carte à acheter \n");
 					
 					if(mode_jeu != 1) {
-						System.out.println("(Niveau - N° Carte)");
 						
-					
+						System.out.println("(Niveau - N° Carte)");
+						/*
+						 * à supprimer lorsqu'on aura vérifié que l'achat de carte marche
+						 * choix_carte();
+						
 						var tab = scanner.next().split("-");
 						System.out.println(tab[1]);
 						choosen_card = Integer.parseInt(tab[1]) - 1;
 						
+						ligne_choosen = Integer.parseInt(tab[0]);*/
+						
+						var tab = choix_carte();
+						System.out.println(tab[1]);
+						choosen_card = Integer.parseInt(tab[1]) - 1;
 						ligne_choosen = Integer.parseInt(tab[0]);
 						
 					}else {
 						choosen_card = scanner.nextInt() - 1;
 					}
-					
+					/*
 					System.out.println("Appuyez sur (5) pour revenir au menu précédent \n ");
-					
+					*/
 					
 			
 					
 					if(choosen_card <= 3) {
-						
+
 						if(joueur.acheteCarte(game.board.get(ligne_choosen).get(choosen_card), game)) {
+							System.out.println("\nVotre carte a été achetée avec succès !\n");
 							tour_valide = 1;
 							game.piocheOneCard(ligne_choosen, choosen_card);
 							
@@ -617,6 +879,9 @@ public class Partie {
 					else {
 						tour_valide = -1;
 						System.out.println("\n Ce numéro de carte n'existe pas !\n");
+						/*à supprimer si on se débarasse du scanner de fin
+						 * System.out.println("\nVeuillez appuyer sur la touche 'Entrée' pour recommencer votre tour : \n");
+						 */
 					}
 					
 					
@@ -627,13 +892,13 @@ public class Partie {
 				
 				/*---------- Prendre ressources ------------*/
 				
-				AffichageLigneCommande.showJeton(game.jetons_disponibles, true);
+				AffichageLigneCommande.showJeton(game.jetons_disponibles, "JETON");
 				
 				
 				
 				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
 				System.out.println("(3) Annuler votre action \n");
-				choix = scanner.nextInt();
+				choix = choix_nb_jetons();
 				
 				
 				if(choix == 1) {
@@ -712,77 +977,85 @@ public class Partie {
 				}
 			}
 			
+			/*cas où l'utilisateur souhaite annuler son action*/
+			else if(choix == 3){
+				System.out.println("\n On affiche les informations du joueur \n");
+				tour_valide = 0;
+			}
+			
 			else if(choix == 4) {
 				
 				/*Réservation de cartes*/
 				
 				System.out.println("1) Réserver une carte du board\n2) Réserver une carte d'une des pioches\n\n");
 				
-				var choix_scanner = scanner.nextInt();
+				var choix_scanner = choix_reserver_carte();
 				
 				if(choix_scanner == 1) {
 					System.out.println("Choisissez une carte du plateau\n(Niveau - N°Carte)\n");
 					
-					var scan = scanner.next().split("-");
-					
-					var niveau_carte = Integer.parseInt(scan[0]);
-					var num_carte = Integer.parseInt(scan[1]) - 1;
-					
-
-					
+					var tab = choix_carte();
+					var niveau_carte = Integer.parseInt(tab[0]);
+					var num_carte = Integer.parseInt(tab[1]) - 1;
 					
 					game.enleveRessource(new Jeton("Jaune"), 1);
-					
-					joueur.reserveCarte(game.board.get(niveau_carte).get(num_carte), game.jetons_disponibles);
-					
-					game.piocheOneCard(niveau_carte, num_carte);
+					if(carte_reserve_valide_2arg(game,niveau_carte,num_carte) != 0){
+						joueur.reserveCarte(game.board.get(niveau_carte).get(num_carte), game.jetons_disponibles);
+						game.piocheOneCard(niveau_carte, num_carte);
+						tour_valide = 1;
+					}
+					else {
+						System.out.println("Erreur ce numéro de carte n'existe pas, vous recommencez votre tour !");
+						tour_valide = -1;		
+					}
 					
 				}
 				
 				if(choix_scanner == 2) {
 					System.out.println("Donnez le niveau de carte que vous voulez piocher\n");
 					
-					
-					game.enleveRessource(new Jeton("Jaune"), 1);
-					
-					joueur.reserveCarte(game.pioche.get(scanner.nextInt()).get(game.pioche.size() - 1), game.jetons_disponibles);
-					
+					var niveau_carte = choix_niv_carte();
+					if(carte_reserve_valide_1arg(game,niveau_carte) != 0){
+						game.enleveRessource(new Jeton("Jaune"), 1);
+						joueur.reserveCarte(game.pioche.get(niveau_carte).get(game.pioche.size() - 1), game.jetons_disponibles);
+						tour_valide = 1;
+					}
+					else {
+						System.out.println("Erreur les cartes de ce niveau ne sont plus disponibles! Vous recommencez votre tour ");
+						tour_valide = -1;		
+					}
 					/*Supprimer la carte de la pioche si pas fait dans la fonction*/
 				}
 				
 				
 				AffichageLigneCommande.showReserved(joueur);
 				
-				tour_valide = 1;
+				
 			}
 			
 			
 			else {
+				
 				/* affichage des infos user et comme cela est automatiquement fait plus tard, on ne fait rien*/
 				/*AffichageLigneCommande.showJoueur(joueur);*/
 				System.out.println("\n Action annulée !\n");
 				tour_valide = 0;
 			}
-			
 			AffichageLigneCommande.showJoueur(joueur);
-
 			
 			//Le joueur a atteint 15 points, une des conditions de fin de jeu est atteinte
 			
-			if(joueur.points_prestiges >= VICTORY_POINTS && !points_victoires) {
+			if(joueur.points_prestiges() >= VICTORY_POINTS && !points_victoires) {
 				points_victoires = true;
 			}
 			
-			
-			
-			
-			
+
 			if(!joueur.checkNbJetons()) {
 				
 				while(!joueur.checkNbJetons()) {
 					
 					System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer pour en avoir 10 maximum\n");
-					AffichageLigneCommande.showJeton(joueur.ressources, false);
+					AffichageLigneCommande.showJeton(joueur.ressources(), null);
 					
 					System.out.println("\nJeton");
 					
@@ -792,13 +1065,12 @@ public class Partie {
 					
 					var quantite = scanner.nextInt();
 					
-					joueur.ressources.put(jeton, joueur.enleveRessource(jeton, quantite));
+					joueur.ressources().put(jeton, joueur.enleveRessource(jeton, quantite, null));
 					
 					game.jetons_disponibles.put(jeton, game.jetons_disponibles.get(jeton) + quantite);
 				}
 				
 			}
-			
 			
 			
 			
@@ -828,26 +1100,21 @@ public class Partie {
 						separator = ", ";
 					}
 					System.out.println("\n.....Un noble vient à votre visite\nIl s'agit de....." + nobles_name + " !\n\nChoisissez en un\n\n");
-					
-					noble_chosen = nobles_visiting.get(scanner.nextInt());
+					System.out.println("Nous vous rappelons que leurs cartes sont les suivantes : ");
+					AffichageLigneCommande.showTuiles(game);
+					noble_chosen = nobles_visiting.get(scanner.nextInt()-1);
 				}
-				
-				int i = 0;
-				
-				for(var noble : game.tuiles_board) {
-					
-					if(noble.equals(noble_chosen)) {
-						joueur.points_prestiges += noble.points_prestiges();
-						game.tuiles_board.remove(i);
-					}
-					
-					i++;
-				}
+						joueur.addPrestige(noble_chosen.points_prestiges());
+						
+						game.efface_noble(noble_chosen);
+						System.out.println("Vous avez maitnenant : " + joueur.points_prestiges());
+						System.out.println(" points de prestige ! "); 
 			}
 			
 
 			/*on vide le scanner pour éviter que le tour se termine sans que le joueur n'ait appuyé sur entrée*/
-			scanner.nextLine();
+			/*à supprimer si tout fonctionne sans
+			 * scanner.nextLine();*/
 			
 			if(tour_valide == 1) {
 				
@@ -860,24 +1127,9 @@ public class Partie {
 		scanner.close();
 		
 		System.out.println("\nFÉLICIATIONS !!!!!!  " + game.isWinner()); // Fin de partie
-	
 	}
-	
-	
 }
 
 
 
-
-
-
-
-/*
-========================================================= Remarque/ Notes générales ========================================================================
-Probablement faire une interface carte developpement contenant les cartes de chaque niveau dans la liste que l'on prendra
-Demander si pas gênant d'avoir autant de champs dans une classe
-Interface entre cartes developpement et tuiles nobles
-AU LIEU DE FAIRE UN CHAMPS BONUS, ON VA MPLUTÔT DIRECGTEMENT AJOUTER DABS LES RESSOURCES PERSOS QUAND ON ACHETE LA CARTE
-Ne pas oublier de faire en sorte que si la taille de la pioche vaut 0 alors on ne peut plus tiré de carte, donc partie terminée.
-Pour l'affichage, pas oublier que si valeurs à deux chiffres ond oit formatter les cases.
-*/
+  
