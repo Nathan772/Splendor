@@ -122,6 +122,7 @@ public class AffichageLigneCommande {
 		System.out.println("Joueur :  " + "\n");
 		showJeton(joueur.ressources(), "JETON");
 		showJeton(joueur.bonus(), "BONUS");
+		showReserved(joueur);
 		
 		
 	}
