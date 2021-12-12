@@ -306,26 +306,7 @@ public class Joueur {
 	 * @param card
 	 * @return
 	 */
-	/*private boolean checkMoney(CarteDev card, Partie game) {
-		
-		var val_joker = game.jetons_disponibles().get("Jaune");
-		
-		for(var elem : card.coût().entrySet()) {
-			
-			var name = elem.getKey();
-			var val = elem.getValue();
-			
-			if(this.ressources.get(name) < val) {
-				
-				if(val_joker < 0) {
-					return false;
-				}
-				val_joker = val_joker - (val - this.ressources.get(name));
-			}
-		}
-		
-		return true;
-	}*/
+
 		/* dernière version de checkMoney*/
 		private boolean checkMoney(CarteDev card, Partie game) {
 		
@@ -352,8 +333,8 @@ public class Joueur {
 	}
 	
 	/* version sans le joker*/
-		/*
-	private boolean checkMoney(CarteDev card, Partie game) {
+	
+	private boolean checkMoney_simple(CarteDev card, Partie game) {
 		
 		for(var elem : card.coût().entrySet()) {
 			
@@ -366,7 +347,7 @@ public class Joueur {
 		}
 		
 		return true;
-	}*/
+	}
 	
 	/**
 	 * Ajout d'une quantite définie de points de prestiges au joueur
@@ -472,8 +453,6 @@ public class Joueur {
 	}
 
 }
-
-
 
 
 
