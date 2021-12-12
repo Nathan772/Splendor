@@ -1,19 +1,25 @@
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 
+/**
+ * 
+ * @author dylandejesus
+ */
 record CarteDev(int niveau, String couleur, int points , String object, HashMap<String, Integer> coût) implements Carte {
 	
 	
 	/**
-	 * Constructeur du type Carte
+	 * Constructor of the type  CarteDev
 	 * 
 	 * @param couleur
+	 *        
+	 * 
 	 * @param coût
+	 * 
 	 * @param points
+	 * 
 	 */
 	public CarteDev{
 		
@@ -27,7 +33,13 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		
 	}
 	
-	
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param line
+	 * @return
+	 */
 	public static CarteDev fromText(String line) {
 		
 		var couleurs = List.of("Blanc", "Bleu", "Vert", "Rouge", "Noir");
@@ -48,23 +60,71 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		return new CarteDev(Integer.parseInt(tab[0]), tab[1], Integer.parseInt(tab[2]), tab[3], cout);
 	}
 	
+	
+	
+	private static String chaineFormatte(String name_card) {			
+		
+		if(name_card == null) {
+			return "|        mine        |\n";
+		}
+		int nb_espaces = (20 - name_card.length()) / 2;
+		var chaine = new StringBuilder();
+		var espaces = new StringBuilder();
+		
+		chaine.append("|");
+		
+		
+		for(var i = 0; i < nb_espaces ;i++) {
+			espaces.append(" ");
+		}
+		
+		chaine.append(espaces).append(name_card).append(espaces);
+		
+		if(name_card.length() % 2 == 1) {
+			chaine.append(" ");
+		}
+		
+		chaine.append("|\n");
+		
+		return chaine.toString();
+	}
+	
+	/**
+	 * String representation of a CarteDev.
+	 */
 	@Override
 	public String toString() {
 
 		var ligne = " ―――――――――――――――――――― \n";
 		var cout = new StringBuilder();
 		var separator = "| ";
-	
-		var first_line = "|  " + this.points + "          " + this.couleur + "   |\n";
+		
+		var fin_first_line = "";
+		
+		if(this.couleur.length() == 5) {
+			fin_first_line = "  |\n";
+		}else {
+			fin_first_line = "   |\n";
+		}
+		
+		
+		var first_line = "|  " + this.points + "          " + this.couleur + fin_first_line;
 		var vide = "|                    |\n";
-		var name = "|        " + this.object + "        |\n";
+		var name = chaineFormatte(this.object);
+		
+		var fin_ligne = "";
 		
 		for(var elem : this.coût().entrySet()) {
 			
 			var couleur_name = elem.getKey();
 			var couleur_val = elem.getValue();
 			
-			cout.append(separator).append(couleur_name).append(": ").append(couleur_val).append("            |\n").append(vide);
+			if(couleur_name.length() == 5) {
+				fin_ligne = "           |\n";
+			}else {
+				fin_ligne = "            |\n";
+			}
+			cout.append(separator).append(couleur_name).append(": ").append(couleur_val).append(fin_ligne).append(vide);
 		}
 		
 		return ligne + vide + first_line + vide + vide + name + vide + vide + cout + vide + ligne;
