@@ -571,19 +571,41 @@ public class Partie{
 	}
 	
 	/* permet de choisir une action parmi celle proposée*/
-	private static int choix_action() {
+	private static int choix_action(int mode_jeu) {
 		Scanner scan = new Scanner(System.in);
 		int choix;
-		do{
-			System.out.println("Quelle action voulez-vous faire (entre 1 et 4) ?");
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix < 1 || choix > 4);
+		if(mode_jeu == 2)
+		{
+			do{
+				System.out.println("Quelle action voulez-vous faire (entre 1 et 4) ?");
+					try {
+					choix = scan.nextInt();
+				}catch(Exception e) {
+					System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
+					scan.next();
+					choix = -1;
+				}
+			}while(choix < 1 || choix > 4);
+		}
+		
+		else if(mode_jeu == 1)
+		{
+			do{
+				System.out.println("Quelle action voulez-vous faire (entre 1 et 3) ?");
+					try {
+					choix = scan.nextInt();
+				}catch(Exception e) {
+					System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
+					scan.next();
+					choix = -1;
+				}
+			}while(choix < 1 || choix > 3);
+			
+		}
+		else {
+			choix = 1;
+		}
+		
 		return choix;
 	}
 	
@@ -774,7 +796,7 @@ public class Partie{
 			if(mode_jeu != 1) {
 				System.out.println("(4) Réserver une carte");
 			}
-			choix = choix_action();
+			choix = choix_action(mode_jeu);
 			/*choix = scanner.nextInt();*/
 			
 			
