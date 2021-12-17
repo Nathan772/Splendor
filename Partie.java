@@ -12,22 +12,48 @@ import java.util.Collections;
 
 
 /**
+ * Declaration of the type Partie. It represents a game of Splendor
  * 
- * @author dylandejesus
+ * @author dylandejesus nathanbilingi
  */
 public class Partie{
 	
+	/**
+	 * Number of victory points
+	 */
 	private static final int VICTORY_POINTS = 15;
 	
+	/**
+	 * Players list on the game
+	 */
 	private ArrayList<Joueur> joueurs;
+	
+	/**
+	 * Pick  of dev cards
+	 */
 	private HashMap <Integer, List<CarteDev>> pioche;
+	
+	/**
+	 * Pick size
+	 */
 	private int taille_pioche;
+	
+	/**
+	 * Board of the game
+	 */
 	private HashMap <Integer, List<CarteDev>> board;
+	
+	/**
+	 * Toeksn available
+	 */
 	private HashMap<String, Integer> jetons_disponibles;	/*On met une Map pour représenter les piles de jetons*/
+	
+	/**
+	 * Nobles cards on the board
+	 */
 	private ArrayList<Tuile> tuiles_board;
 
 
-	
 	/**
 	 * Constructor of the type Partie.
 	 */
@@ -56,6 +82,7 @@ public class Partie{
 	
 	
 	/**
+	 * 
 	 * 
 	 * @return
 	 */
@@ -88,17 +115,21 @@ public class Partie{
 	}
 	
 	
-	
+	public HashMap <Integer, List<CarteDev>> pioche(){
+		return this.pioche;
+	}
 	
 	/**
-	 * Initialise une partie. Correspond à la préparation du plateau.
+	 * Initialize a game
+	 * 
+	 * @param mode
+	 *        Game mode
 	 */
 	private void initialisePartie(int mode) {
 		
 		this.initialiseOrdreJoueurs();
 		this.initialiseJetons();
-		
-		
+	
 		//Mode de jeu 1
 		if(mode == 1) {
 			
@@ -108,7 +139,7 @@ public class Partie{
 		}else {
 			
 			try{
-				this.loadDeck(Path.of("Cartes_Devs.txt"));
+				this.loadDeck(Path.of("src/Cartes_Devs.txt"));
 				
 			}catch(IOException e) {
 		    	System.out.println(e.getMessage());
@@ -126,12 +157,19 @@ public class Partie{
 	
 	
 	/**
+	 * Load Noble card in a file.
+	 * 
 	 * 
 	 * @param path
+	 *        File path
+	 *        
 	 * @param tuiles
-	 * @throws IOException
+	 *        Noble Cards
+	 *        
+	 * @throws IOException If there is a problem in the read of the file
 	 */
 	private void loadTuiles(Path path, ArrayList<Tuile> tuiles) throws IOException {
+		
 		Objects.requireNonNull(path, "File path given is null");
 		
 		Tuile carte;
@@ -149,17 +187,15 @@ public class Partie{
 		} // appelle reader.close()
 	}
 	
-	
 	/**
-	 * 
+	 * Initialise Noble cards. There are (nb player + 1) nobles on the board
 	 */
 	private void  initialiseTuiles() {
 	
-		
 		var all_tuiles = new ArrayList<Tuile>();
 		
 		try {
-			this.loadTuiles(Path.of("Tuiles.txt"), all_tuiles);
+			this.loadTuiles(Path.of("src/Tuiles.txt"), all_tuiles);
 			
 		}catch(IOException e) {
 			System.out.println(e.getMessage());
@@ -181,7 +217,7 @@ public class Partie{
 	
 	
 	/**
-	 * Modifie l'odre de la liste des joueurs afin que celui qui commence soit le joueur, le plus jeune.
+	 * Change the order of the players list to make the the younger player start.
 	 */
 	private void initialiseOrdreJoueurs() {
 		
@@ -213,13 +249,13 @@ public class Partie{
 	
 	
 	/**
-	 * Renvoie l'indice du joueur le plus jeune de la liste de joueurs.
-	 * Renvoie la valeur -1 si problème rencontré.
+	 * 
+	 * Return the index of the youngest player in the list. Returns the value -1 if there is a problem.
 	 * 
 	 * @param joueurs
-	 *        Liste de joueurs dont on doit trouver le plus jeune
+	 *        List of the players
 	 *        
-	 * @return Indice du joueur le plus jeune
+	 * @return Index of the the youngest player
 	 */
 	private static int findYounger(ArrayList<Joueur> joueurs) {
 		
@@ -243,20 +279,20 @@ public class Partie{
 	
 	
 	/**
-	 * Initialise les jetons disponibles d'une partie. Il y a 7 jetons par couleur
+	 * Initialise all the available tokens. There are 7 tokens available by color.
 	 */
 	private void initialiseJetons() {
 		this.jetons_disponibles.put("Rouge", 7);	/*On mettra une constante dans la classe pour 7 jetons*/
 		this.jetons_disponibles.put("Vert", 7);
 		this.jetons_disponibles.put("Bleu", 7);
 		this.jetons_disponibles.put("Noir", 7);
-		this.jetons_disponibles.put("Jaune", 7);
+		this.jetons_disponibles.put("Jaune", 5);
 		this.jetons_disponibles.put("Blanc", 7);
 	}
 	
 	/**
-	 * Initialise la pioche consituée de cartes de manière aléatoire. Chaque carte possède une des couleurs
-	 * suivantes : Rouge, Vert, Noir, Bleu, Blanc, Jaune, Blanc.
+	 * Initialize the deck made up of cards in a random manner. Each card has one of the following colors
+	 * following colors: Red, Green, Black, Blue, White, Yellow, White.
 	 */
 	private void initialisePioche() {
 		
@@ -280,11 +316,11 @@ public class Partie{
 	}
 	
 	/**
-	 * Pioche une carte dans la pioche et l'ajoute au plateau. Si on choisit de piocher une carte
-	 * on supprime le carte du plateau et on rajoute à sa place la carte en haut de la pioche
+	 * Draw a card from the deck and add it to the board. If you choose to draw a card
+	 * remove the card from the board and add the top card of the deck in its place
 	 * 
 	 * @param  index_supp
-	 * 		   Indice de la carte à remplacer dans la liste
+	 * 		   Index of the card ti replace
 	 */
 	private CarteDev piocheOneCard(int ligne, int index_supp) {
 		
@@ -298,12 +334,10 @@ public class Partie{
 		this.taille_pioche -= 1;
 		
 		return card_picked;
-		
 	}
 	
-	
 	/**
-	 * Pioche 4 cartes developpement dans la pioche.
+	 * Draw 4 cards from the deck.
 	 */
 	private void piocheFourCards(int ligne) {
 		
@@ -315,20 +349,20 @@ public class Partie{
 	}
 	
 	/**
-	 * Ajoute une joueur à la liste des joueurs de la partie.
+	 * Add a player in the game list of players
 	 * 
 	 * @param  player
-	 * 		   Joueur a ajouté
+	 * 		   Player to add
 	 */
 	private void addPlayer(Joueur player) {
 		this.joueurs.add(player);
 	}
 	
 	/**
-	 * Détermine qui parmis la liste de joueurs est le vainqueur. Le vainqueur
-	 * est celui possèdant le plus de points de prestiges. Si deux joueurs
-	 * possèdent le même nombre de points, on prend celui qui possède le moins
-	 * de cartes.
+	 * Determine who from the list of players is the winner. The winner
+	 * is the one with the most prestige points. If two players
+	 * have the same number of points, the player with the least number of cards is
+	 * cards.
 	 */
 	private Joueur isWinner() {
 		
@@ -349,14 +383,14 @@ public class Partie{
 	}
 	
 	/**
-	 * Echange deux valeurs de la liste de joueurs. On echange les deux valeurs se trouvant
-	 * aux indices 'index1' et 'index2'.
+	 * Exchange two values from the list of players. We exchange the two values located
+	 * index1' and 'index2'.
 	 * 
 	 * @param  index1
-	 *         Premier indice
+	 *         First index
 	 * 
 	 * @param  index2
-	 * 	       Second indice
+	 * 	       Second index
 	 */
 	private static void swap(ArrayList<Joueur> list, int index1, int index2) {
 		
@@ -367,14 +401,16 @@ public class Partie{
 	}
 	
 	/**
-	 * Trouve le joueur ayant le plus de points de prestiges dans la liste de joueur.
-	 * Si deux joueurs ont le même nombre de points de prestiges on garde celui qui possède
-	 * le moins de cartes de développement. La Méthode renvoie l'objet de type Joueur.
+	 * Find the player with the most prestige points in the player list.
+	 * If two players have the same number of prestige points, the one with the
+	 * the less development cards. The Method returns the object of type Player.
 	 * 
 	 * @param  classement
-	 * 		   Liste des joueurs
+	 * 		   List of players
 	 */
 	private static Joueur topClassement(ArrayList<Joueur> classement) {
+		
+		Objects.requireNonNull(classement);
 		
 		Joueur best_player = classement.get(0);
 		int i = 0;
@@ -392,20 +428,20 @@ public class Partie{
 	}
 	
 	/**
-	 * Renvoie l'index du joueur ayant le moins de points de prestiges dans l'intervalle d'indexs [debut, fin[.
+	 * Returns the index of the player with the least prestige points in the index interval [start, end[.
 	 * 
 	 * @param  list
-	 * 			Liste de joueurs
+	 * 			List of players
 	 * 
 	 * @param  debut
-	 *         Entier représentant l'index de début
+	 *         Integer representing the start index
 	 * 
 	 * @param  fin
-	 *         Entier représentant l'index de fin
+	 *         Integer representing the end index
 	 */
 	private static int indexOfMin(ArrayList <Joueur> list, int debut, int fin){
 
-        Objects.requireNonNull(list, "Array is null (indexOfMin)");
+        Objects.requireNonNull(list);
 
         if(debut < 0){
             throw new IllegalArgumentException("Debut index given under 0 (indexOfMin)");
@@ -430,15 +466,18 @@ public class Partie{
     }
 	
 	/**
-	 * Renvoie true si j1 possède moins de points de prestiges que j2
+	 * Returns true if j1 has less prestige points than j2
 	 * 
 	 * @param  j1
-	 * 		   Joueur 1
+	 * 		   First player
 	 * 
 	 * @param  j2
-	 *         Joueur 2
+	 *         Second player
 	 */
 	private static boolean compareJoueur(Joueur j1, Joueur j2){
+		
+		Objects.requireNonNull(j1);
+		Objects.requireNonNull(j2);
 		
 		if(j1.points_prestiges() < j2.points_prestiges()) {
 			return true;
@@ -447,17 +486,19 @@ public class Partie{
     }
 	
 	/**
-	 * Trie la liste de joueurs dans l'ordre Croissant. La comparaison entre les joueurs se fait sur
-	 * le nombre de points de prestiges, à points de prestiges égaux c'est le joueur possèdant le moins de
-	 * cartes développement qui l'emporte.
+	 * Sorts the list of players in ascending order. The comparison between the players is done on
+	 * the number of prestige points, with equal prestige points the player with the least
+	 * development cards wins.
 	 * 
 	 * @param  classement
-	 * 	 	   Liste de joueurs
+	 * 	 	   List of players
 	 * 
 	 * @param  size
-	 * 		   Taille de la liste 
+	 * 		   List size
 	 */
 	private static boolean sortClassement(ArrayList<Joueur> classement, int size) {
+		
+		Objects.requireNonNull(classement);
 		
 		for(var i = 0; i < size ; i++){
             swap(classement, i, indexOfMin(classement, i, size));     /*On va jusqu'à array.length car indexOfMin() va dans l'intervalle [debut, fin[*/
@@ -467,14 +508,15 @@ public class Partie{
 	}
 	
 	/**
-	 * Enlève une quantité définie de jetons disponibles.
+	 * Removes a set amount of available tokens.
 	 * 
 	 * @param jeton
-	 * 		  Type du jeton à supprimer
+	 * 		  Type of tokens to remove
 	 * 
 	 * @param quantite
-	 * 		  Quantité de jetons à supprimer
-	 * 			
+	 * 		  Number of tokens to remove
+	 * 
+	 * @return True if it has been successfully removed or false.		
 	 *
 	 */
 	private boolean enleveRessource(Jeton jeton, int quantite) {
@@ -491,8 +533,11 @@ public class Partie{
 	}
 	
 	/**
+	 * Load the development card where the informations are in a file. It makes the picks.
 	 * 
 	 * @param path
+	 *        File path
+	 *        
 	 * @throws IOException
 	 */
 	private void loadDeck(Path path) throws IOException {
@@ -522,8 +567,10 @@ public class Partie{
 	
 	
 	/**
+	 * Remove the noble chosen 
 	 * 
 	 * @param noble_chosen
+	 *        Noble chosen to remove
 	 */
 	private void efface_noble(Tuile noble_chosen) {
 		
@@ -537,197 +584,7 @@ public class Partie{
 				
 		}
 	}
-	/* permet de choisir un mode de jeu*/
-	private static int choix_mode() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-		System.out.println("Quel mode de jeu (1 ou 2) choisissez vous ?  => ");
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Entrez un nombre entre 1 et 2 !");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix != 1 && choix != 2);
-		return choix;
-	}
-	/* permet de choisir le nombre de joueur qui participeront*/
-	private static int choix_nb_joueurs() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-			System.out.println("Combien de joueurs participent à la partie (choisissez un nombre entre 2 et 4) ?");
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Entrez un nombre entre 2 et 4 !");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix < 2 || choix > 4);
-		return choix;
-	}
 	
-	/* permet de choisir une action parmi celle proposée*/
-	private static int choix_action(int mode_jeu) {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		if(mode_jeu == 2)
-		{
-			do{
-				System.out.println("Quelle action voulez-vous faire (entre 1 et 4) ?");
-					try {
-					choix = scan.nextInt();
-				}catch(Exception e) {
-					System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
-					scan.next();
-					choix = -1;
-				}
-			}while(choix < 1 || choix > 4);
-		}
-		
-		else if(mode_jeu == 1)
-		{
-			do{
-				System.out.println("Quelle action voulez-vous faire (entre 1 et 3) ?");
-					try {
-					choix = scan.nextInt();
-				}catch(Exception e) {
-					System.out.println("Erreur : Entrez un nombre entre 1 et 4 !");
-					scan.next();
-					choix = -1;
-				}
-			}while(choix < 1 || choix > 3);
-			
-		}
-		else {
-			choix = 1;
-		}
-		
-		return choix;
-	}
-	
-	/* permet de choisir le type de carte que l'on souhaite acheteer*/
-	private static int choix_achat() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-			System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Entrez le nombre 1 ou 2 !");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix != 1 && choix != 2);
-		return choix;
-	}
-	
-	/* permet de choisir entre différents nombre de jetons*/
-	private static int choix_nb_jetons() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Entrez le nombre 1, 2 ou 3!");
-				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
-				System.out.println("(3) Annuler votre action \n");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix != 1 && choix != 2 && choix != 3);
-		return choix;
-	}
-	private static String[] choix_carte() {
-		Scanner scan = new Scanner(System.in);
-		int succes = -1;
-		String[] tab = {"a"};
-		do{
-				try {
-					tab = scan.next().split("-");
-					/* test pour voir si les valeurs récupérées sont au bon format, en cas d'erreur on retry*/
-					var choosen_card = Integer.parseInt(tab[1]) - 1;
-					var ligne_choosen = Integer.parseInt(tab[0]);
-					succes = 1;
-			}catch(Exception e) {
-				System.out.println("Erreur : veuillez écrire au format : Niveau - N° Carte ");
-				/*scan.next();*/
-				succes = -1;
-			}
-		}while(succes == -1);
-		
-		return tab;
-		
-	}
-	private static int choix_reserver_carte() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("La valeur que vous avez entré est incorrecte. Veuillez réessayer ");
-				System.out.println("1) Réserver une carte du board\n2) Réserver une carte d'une des pioches\n\n");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix != 1 && choix != 2);
-		return choix;
-	}
-	
-	private static int carte_reserve_valide_2arg(Partie game, int niveau_carte, int num_carte ) {
-			try {
-				game.board.get(niveau_carte).get(num_carte);
-			}catch(Exception e) {
-				return 0;
-			}
-			return 1;
-		
-	}
-	
-	private static int carte_reserve_valide_1arg(Partie game, int niveau_carte) {
-		try {
-			game.pioche.get(niveau_carte).get(game.pioche.size() - 1);
-		}catch(Exception e) {
-			return 0;
-		}
-		return 1;
-}
-	
-	private static int numero_carte_valide() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-			try {
-				choix = scan.nextInt();
-				return choix;
-			}catch(Exception e) {
-			System.out.println("Erreur : Veuillez entrer un numero de carte valide : ");
-			}
-		}while(true);
-	
-}
-	
-	/* permet de choisir entre différents niveaux de carte*/
-	private static int choix_niv_carte() {
-		Scanner scan = new Scanner(System.in);
-		int choix;
-		do{
-				try {
-				choix = scan.nextInt();
-			}catch(Exception e) {
-				System.out.println("Erreur : Veuillez entrer un niveau de carte entre 1 et 3");
-				scan.next();
-				choix = -1;
-			}
-		}while(choix != 1 && choix != 2 && choix != 3);
-		return choix;
-	}
 	
 	
 	/**
@@ -752,11 +609,12 @@ public class Partie{
 		/*Lire les valeurs d el'utilisateur*/
 		
 		Partie game = new Partie();
-
-		mode_jeu = choix_mode();
+		System.out.println("Quel mode de jeu (1 ou 2) choisissez vous ?  => ");
+		mode_jeu = Saisie.choix_intervalle(1,2);
 		
 		if(mode_jeu == 2) {
-			nb_joueurs = choix_nb_joueurs();
+			System.out.println("Combien de joueurs participent à la partie (choisissez un nombre entre 2 et 4) ?");
+			nb_joueurs = Saisie.choix_intervalle(2, 4);
 		}
 		
 		/*Enregistre les deux joueurs*/
@@ -796,8 +654,8 @@ public class Partie{
 			if(mode_jeu != 1) {
 				System.out.println("(4) Réserver une carte");
 			}
-			choix = choix_action(mode_jeu);
-			/*choix = scanner.nextInt();*/
+			System.out.println("Quelle action voulez-vous faire (entre 1 et 4) ?");
+			choix = Saisie.choix_intervalle(1, 4);
 			
 			
 			if(choix == 1) {
@@ -809,8 +667,8 @@ public class Partie{
 				
 				
 				if(mode_jeu == 2) {
-					/*System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");*/
-					choix_mode_achat = choix_achat();
+					System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
+					choix_mode_achat = Saisie.choix_intervalle(1, 2);
 				}
 					
 				
@@ -819,11 +677,13 @@ public class Partie{
 					if(joueur.reserve().size() > 0) {
 						System.out.println("\nChoisissez votre numero de carte parmi les suivantes \n");
 						AffichageLigneCommande.showReserved(joueur);
-						var carte_numero = numero_carte_valide();
+						var carte_numero = Saisie.capture_int();
 						/* cas où le numéro de la carte est valide*/
-						if(carte_numero <= joueur.reserve().size() && carte_numero >= 0) { 
+						if(carte_numero <= joueur.reserve().size() && carte_numero > 0) { 
 							/* cas où l'utilisateur peut payer */
 							if(joueur.acheteCarte(joueur.reserve().get(carte_numero-1), game)) {
+								var carte_delete = joueur.reserve().get(carte_numero-1);
+								joueur.reserve().remove(carte_delete);
 								System.out.println("\n Votre achat a été réalisé avec succès ! \n");
 								tour_valide = 1;	
 							}
@@ -864,13 +724,13 @@ public class Partie{
 						
 						ligne_choosen = Integer.parseInt(tab[0]);*/
 						
-						var tab = choix_carte();
+						var tab = Saisie.choix_carte();
 						System.out.println(tab[1]);
 						choosen_card = Integer.parseInt(tab[1]) - 1;
 						ligne_choosen = Integer.parseInt(tab[0]);
 						
 					}else {
-						choosen_card = scanner.nextInt() - 1;
+						choosen_card = Saisie.capture_int()- 1;
 					}
 					/*
 					System.out.println("Appuyez sur (5) pour revenir au menu précédent \n ");
@@ -920,7 +780,7 @@ public class Partie{
 				
 				System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
 				System.out.println("(3) Annuler votre action \n");
-				choix = choix_nb_jetons();
+				choix = Saisie.choix_intervalle(1,3);
 				
 				
 				if(choix == 1) {
@@ -1011,17 +871,18 @@ public class Partie{
 				
 				System.out.println("1) Réserver une carte du board\n2) Réserver une carte d'une des pioches\n\n");
 				
-				var choix_scanner = choix_reserver_carte();
+				var choix_scanner = Saisie.choix_intervalle(1, 2);
+				
 				
 				if(choix_scanner == 1) {
 					System.out.println("Choisissez une carte du plateau\n(Niveau - N°Carte)\n");
 					
-					var tab = choix_carte();
+					var tab = Saisie.choix_carte();
 					var niveau_carte = Integer.parseInt(tab[0]);
 					var num_carte = Integer.parseInt(tab[1]) - 1;
 					
-					game.enleveRessource(new Jeton("Jaune"), 1);
-					if(carte_reserve_valide_2arg(game,niveau_carte,num_carte) != 0){
+					/*game.enleveRessource(new Jeton("Jaune"), 1);*/
+					if(Saisie.carte_reserve_valide_2arg(game,niveau_carte,num_carte) != 0){
 						joueur.reserveCarte(game.board.get(niveau_carte).get(num_carte), game.jetons_disponibles);
 						game.piocheOneCard(niveau_carte, num_carte);
 						tour_valide = 1;
@@ -1036,9 +897,9 @@ public class Partie{
 				if(choix_scanner == 2) {
 					System.out.println("Donnez le niveau de carte que vous voulez piocher\n");
 					
-					var niveau_carte = choix_niv_carte();
-					if(carte_reserve_valide_1arg(game,niveau_carte) != 0){
-						game.enleveRessource(new Jeton("Jaune"), 1);
+					var niveau_carte = Saisie.choix_intervalle(1,3);
+					if(Saisie.carte_reserve_valide_1arg(game,niveau_carte) != 0){
+						/*game.enleveRessource(new Jeton("Jaune"), 1);*/
 						joueur.reserveCarte(game.pioche.get(niveau_carte).get(game.pioche.size() - 1), game.jetons_disponibles);
 						tour_valide = 1;
 					}
@@ -1081,13 +942,19 @@ public class Partie{
 					
 					System.out.println("\nJeton");
 					
-					var jeton = scanner.next();
+					String jeton;
+					int quantite;
+					do{
+						jeton = Saisie.saisieJeton_name();
+						
+						System.out.println("Quantite"); 
+						
+						quantite = Saisie.nb_jeton_defausse();
+						
+					}while(Saisie.valide_defausse(joueur, jeton, quantite) == false || quantite > joueur.NbJetons_loose());
 					
-					System.out.println("Quantite"); 
-					
-					var quantite = scanner.nextInt();
-					
-					joueur.ressources().put(jeton, joueur.enleveRessource(jeton, quantite, null));
+					System.out.println("\n Suppression réussie ! \n");
+					joueur.ressources().put(jeton, joueur.enleveRessource(jeton, quantite, game.jetons_disponibles));
 					
 					game.jetons_disponibles.put(jeton, game.jetons_disponibles.get(jeton) + quantite);
 				}
@@ -1111,26 +978,31 @@ public class Partie{
 					
 					noble_chosen = nobles_visiting.get(0);
 					
-				}else {
 					
+				}else {
+					int nb_noble = 0;
 					var nobles_name = new StringBuilder();
 					var separator = "";
 					
 					for(var elem : nobles_visiting) {
-						
+						nb_noble++;
 						nobles_name.append(separator).append(elem.name());
 						separator = ", ";
 					}
 					System.out.println("\n.....Un noble vient à votre visite\nIl s'agit de....." + nobles_name + " !\n\nChoisissez en un\n\n");
 					System.out.println("Nous vous rappelons que leurs cartes sont les suivantes : ");
 					AffichageLigneCommande.showTuiles(game);
-					noble_chosen = nobles_visiting.get(scanner.nextInt()-1);
+					noble_chosen = nobles_visiting.get(Saisie.choix_intervalle(1, nb_noble)-1);
 				}
-						joueur.addPrestige(noble_chosen.points_prestiges());
-						
-						game.efface_noble(noble_chosen);
-						System.out.println("Vous avez maitnenant : " + joueur.points_prestiges());
-						System.out.println(" points de prestige ! "); 
+				joueur.addPrestige(noble_chosen.points_prestiges());
+				game.efface_noble(noble_chosen);
+				System.out.println("Vous avez maitnenant : " + joueur.points_prestiges());
+				System.out.println(" points de prestige ! "); 
+				
+				if(game.jetons_disponibles().get("Jaune") > 0) {
+					
+					joueur.addRessource(new Jeton("Jaune"), 1);			
+				}
 			}
 			
 
