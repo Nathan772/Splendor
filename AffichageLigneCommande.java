@@ -1,39 +1,49 @@
 import java.util.HashMap;
+import java.util.Objects;
 import java.lang.StringBuilder;
 
-
-public class AffichageLigneCommande {
+/**
+ * Declaration of the class AffichageLigneCommande. It gathers all the functions thah print objets on
+ * the console
+ * 
+ * @author dylandejesus nathanbilingi
+ */
+public class AffichageLigneCommande implements Affichage{
 	
 	/**
-	 * Print the 
+	 * Print the game board of a game.
 	 * 
 	 * @param game
+	 *        Game to print its board
+	 * 
+	 * @param mode
+	 *        Game mode
 	 */
-	public static void showPlateau(Partie game, int mode) {
+	public void showPlateau(Mode game, int mode) {
+		
+		Objects.requireNonNull(game);
 		
 		if(mode != 1) {
 			showTuiles(game);
 		}
 		
-		
 		showBoard(game);
-		
 		showJeton(game.jetons_disponibles(), "JETON");
-		
 		
 		System.out.println("\n\n========================================== JOUEURS ==========================================\n\n");
 		
 		for(var joueur : game.joueurs()) {
 			showJoueur(joueur);
 			System.out.println("\n");
-		}
-		
+		}	
 	}
 	
 	/**
-	 * Affiche les jetons disponibles sur le plateau.
+	 * 
+	 * Print the available tokens on the console. It i représented as a board.
 	 * 
 	 * @param ressources
+	 *        Resources of tokens
 	 */
 	public static void showJeton(HashMap<String, Integer> ressources, String message) {
 		
@@ -42,8 +52,6 @@ public class AffichageLigneCommande {
 		StringBuilder chaine_quantite = new StringBuilder();
 		String separator = "|    ";
 		String separator_quantite = "|      ";
-		
-		
 		
 		if(message != null) {
 			System.out.println("\n\n========================================== "+ message + " ==========================================\n\n");
@@ -76,7 +84,6 @@ public class AffichageLigneCommande {
 		System.out.println(chaine_tab);
 		System.out.println(chaine_quantite);
 		System.out.println(chaine_tab);
-
 	}
 
 	
@@ -86,7 +93,9 @@ public class AffichageLigneCommande {
 	 * @param game
 	 *        Game token to print it board
 	 */
-	public static void showBoard(Partie game) {
+	public void showBoard(Mode game) {
+		
+		Objects.requireNonNull(game);
 		
 		for(int i = 1 ; i < game.board().size() + 1 ; i++) {
 			
@@ -102,11 +111,9 @@ public class AffichageLigneCommande {
 					
 					if(carte != null)
 						System.out.println(carte);
-					num_card ++;
-					
+					num_card ++;	
 				}
 			}
-			
 		}
 	}
 	
@@ -114,25 +121,24 @@ public class AffichageLigneCommande {
 	 * Print the player informations.
 	 * 
 	 * @param joueur
+	 * 	      Player given to show its game infomations 
 	 */
-	public static void showJoueur(Joueur joueur) {
-		
-		
+	public int showJoueur(Joueur joueur) {
 		System.out.println("Joueur : " + joueur.pseudo() + "\n\nPoints de prestiges : " + joueur.points_prestiges() + "\n\nRessources : \n");
 		System.out.println("Joueur :  " + "\n");
 		showJeton(joueur.ressources(), "JETON");
 		showJeton(joueur.bonus(), "BONUS");
-		showReserved(joueur);
-		
-		
+		this.showReserved(joueur);
+		return 0;
 	}
 	
 	/**
-	 * Print the 
+	 * Print the Nobles Cards on the board.
 	 * 
 	 * @param game
+	 *        Game given to show its nobles card on the board
 	 */
-	public static void showTuiles(Partie game){
+	public static void showTuiles(Mode game){
 		
 		System.out.println("    -- NOBLES --   \n\n");
 		
@@ -147,9 +153,11 @@ public class AffichageLigneCommande {
 	 * Print the cards reserved by a player.
 	 * 
 	 * @param joueur
-	 * 		  Player of the
+	 * 		  Player given.
 	 */
-	public static void showReserved(Joueur joueur) {
+	public void showReserved(Joueur joueur) {
+		
+		Objects.requireNonNull(joueur);
 		
 		if(joueur.reserve().size() == 0) {
 			System.out.println("Vous ne possèdez aucune carte réservée \n\n");
@@ -158,28 +166,8 @@ public class AffichageLigneCommande {
 		
 		System.out.println("Cartes que vous avez réservé \n\n");
 		
-		
-		
 		for(var elem : joueur.reserve()) {
 			System.out.println(elem + "\n");
 		}
 	}
 }
-
-
-
-/*
- * 
- * 
- * 
- * 
- * Faire en sorte que si on a des chiffres l'affichage s'adapte.
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * */
