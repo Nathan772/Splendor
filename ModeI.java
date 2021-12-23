@@ -44,16 +44,6 @@ public class ModeI implements Mode {
 	 */
 	private ArrayList<Tuile> tuiles_board;
 	
-	/*
-	 * A supprimer probablement
-	 * The player for who it's the turn to play.
-	 
-	private Joueur current_player;*/
-	/*
-	 * This variable enables to know if the turn happened well.
-	 
-	private int tour_valide = 1;
-	*/
 	
 	/**
 	 * Constructor of the type Partie.
@@ -130,34 +120,13 @@ public class ModeI implements Mode {
 	 * @param mode
 	 *        Game mode
 	 */
-	public void initialisePartie(int mode) {
+	public void initialisePartie() {
 		
 		this.initialiseOrdreJoueurs();
 		this.initialiseJetons();
 	
-		//Mode de jeu 1
-		if(mode == 1) {
-			
-			this.initialisePioche();
-			this.piocheFourCards(1);
-			
-		}else {
-			
-			try{
-				this.loadDeck(Path.of("src/Cartes_Devs.txt"));
-				
-			}catch(IOException e) {
-		    	System.out.println(e.getMessage());
-		    	System.exit(1);
-		    
-		    }
-			
-			this.piocheFourCards(1);
-			this.piocheFourCards(2);
-			this.piocheFourCards(3);
-			
-			this.initialiseTuiles();
-		}
+		this.initialisePioche();
+		this.piocheFourCards(1);
 	}
 	
 	/**
@@ -168,62 +137,9 @@ public class ModeI implements Mode {
 	}
 	
 	
-	/**
-	 * Load Noble card in a file.
-	 * 
-	 * 
-	 * @param path
-	 *        File path
-	 *        
-	 * @param tuiles
-	 *        Noble Cards
-	 *        
-	 * @throws IOException If there is a problem in the read of the file
-	 */
-	private void loadTuiles(Path path, ArrayList<Tuile> tuiles) throws IOException {
-		
-		Objects.requireNonNull(path, "File path given is null");
-		
-		Tuile carte;
-		
-		try(var reader = Files.newBufferedReader(path)) {  //On teste et renvoie une erreur si problème
-			 String line;
-			 while ((line = reader.readLine()) != null) {
-				 
-				 carte = Tuile.fromText(line);
-				 
-
-				 tuiles.add(carte);
-				 
-			 }
-		} // appelle reader.close()
-	}
 	
-	/**
-	 * Initialise Noble cards. There are (nb player + 1) nobles on the board
-	 */
-	private void  initialiseTuiles() {
 	
-		var all_tuiles = new ArrayList<Tuile>();
-		
-		try {
-			this.loadTuiles(Path.of("src/Tuiles.txt"), all_tuiles);
-			
-		}catch(IOException e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		
-		
-		for(var i = 0; i < this.joueurs.size() + 1 ;i++) {
-			
-			Collections.shuffle(all_tuiles);
-			
-			this.tuiles_board.add(all_tuiles.get(all_tuiles.size() - 1));
-			
-			all_tuiles.remove(all_tuiles.size() - 1);
-		}
-	}
+	
 	
 	/**
 	 * Change the order of the players list to make the the younger player start.
@@ -322,99 +238,6 @@ public class ModeI implements Mode {
 		Collections.shuffle(this.pioche.get(1));
 	}
 	
-	
-	
-	
-	
-	/**
-	 * Load the development card where the informations are in a file. It makes the picks.
-	 * 
-	 * @param path
-	 *        File path
-	 *        
-	 * @throws IOException
-	 */
-	private void loadDeck(Path path) throws IOException {
-		
-		Objects.requireNonNull(path, "File path given is null");
-		
-		CarteDev carte;
-		
-		try(var reader = Files.newBufferedReader(path)) {  //On teste et renvoie une erreur si problème
-			 String line;
-			 while ((line = reader.readLine()) != null) {
-				 
-				 carte = CarteDev.fromText(line);
-				 
-
-				 this.pioche.get(carte.niveau()).add(carte);
-				 
-				 this.taille_pioche += 1;
-				 
-			 }
-		} // appelle reader.close()
-		
-		Collections.shuffle(this.pioche.get(1));
-		Collections.shuffle(this.pioche.get(2));
-		Collections.shuffle(this.pioche.get(3));
-	}
-	
-	/**
-	 * Remove the noble chosen 
-	 * 
-	 * @param noble_chosen
-	 *        Noble chosen to remove
-	 */
-	private void efface_noble(Tuile noble_chosen) {
-		
-		var iterator = this.tuiles_board.iterator();
-		while(iterator.hasNext()) {
-			var tuile1 = iterator.next();
-			if(tuile1.equals(noble_chosen)) {
-				System.out.println("Vous avez choisi : " + tuile1.name() + " ");
-				iterator.remove();
-			}
-				
-		}
-	}
-	
-	/**
-	 *  This method validate or invalidate a player's buying attempt
-	 * 
-	 * @param joueur
-	 * the player whom we will look at the reserve and the ressources
-	 * @param carte_numero
-	 * the number of the card that the user wants to buy. It allows to identify it.
-	*  @return an int which the value indicates either the operation succeed or failed
-	*  -1 = failure
-	*  1 = success
-	 */
-	private int validationAchatReserve(Joueur joueur, int carte_numero) {
-		
-		Objects.requireNonNull(joueur);
-		Objects.requireNonNull(this);
-		Objects.requireNonNull(carte_numero);
-		
-		//3 lignes
-		/* cas où il n'est pas possible d'acheter la carte, soit parce que le numéro était erroné, soit parce que l'utilisateur n'avait pas réservé de carte*/
-		/* la cause est déterminé avec un msg de la fonction précédente "achatCarteReservee" qui vient de Saisie*/
-		if(carte_numero <= 0) {
-			
-			return -1;
-		}
-		else if(joueur.acheteCarte(joueur.reserve().get(carte_numero-1), this)) {
-			var carte_delete = joueur.reserve().get(carte_numero-1);
-			joueur.reserve().remove(carte_delete);
-			System.out.println("\n Votre achat a été réalisé avec succès ! \n");
-			return 1;
-		}
-		/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent
-		 *  de force car il ne peut pas se payer cette carte*/
-			/*tour_valide = -1;*/
-		System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
-		return -1;
-	}
-	
 	/**
 	 *  This method validate or invalidate a player's buying attempt
 	 * 
@@ -478,25 +301,15 @@ public class ModeI implements Mode {
 	 * -1 = transaction failed
 	 */
 	
-	public int achatCarte(Joueur joueur, int mode_jeu, Affichage affichage) {
+	public int achatCarte(Joueur joueur, Affichage affichage) {
 		
-		/*--------- Achat de cartes --------------*/
 		affichage.showBoard(this);
 		Objects.requireNonNull(this);
 		Objects.requireNonNull(joueur);
 		
-		if(mode_jeu != 1 && mode_jeu != 2) {
-			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
-		}
-		var choix = Saisie.choixAchatCarte(this, mode_jeu, affichage);
-		/* cas où l'utilisateur achète une carte non-réservée*/
-		if(choix == 1) {
-			var carte = Saisie.achatCarteNonReservee(mode_jeu);
-			return validationAchatNonReserve(joueur, carte);
-		}
-		/* cas où l'utilisateur achète une carte réservée*/
-		var carte = Saisie.achatCarteReservee(joueur, affichage);
-		return validationAchatReserve(joueur, carte);
+		var carte = Saisie.achatCarteNonReservee(1);
+		return validationAchatNonReserve(joueur, carte);
+		
 	}
 	
 	/**
@@ -514,69 +327,10 @@ public class ModeI implements Mode {
 		
 		Objects.requireNonNull(joueur);
 		
-		var choix = Saisie.choixReservation();
-		
-		if(choix ==  1) {
-			var carte = Saisie.reservationCartePlateau();
-			return validationReservationCartePlateau(joueur,carte);
-		}
-		var carte = Saisie.reservationCartePioche();
-		return validationReservationCartePioche(joueur,carte);
+		return -1; 	/*Aucune reservation*/
 	}
 	
-	/**
-	 * This method validate or nullify the action of a card reservation made by a user
-	 * 
-	 * @param joueur
-	 *       the player who his concerned by the reservation
-	 *  @param niveau_carte
-	 *       the card that interests the user level 
-	 * @return 
-	 * an int which represents either everything occured well or not
-	 * 
-	 * 1 = everything worked
-	 * -1 = a problem occured the user has to redo his turn
-	 */
-	private int validationReservationCartePioche(Joueur joueur, int niveau_carte) {
-		
-		Objects.requireNonNull(joueur);
-		Objects.requireNonNull(niveau_carte);
-		
-		if(Saisie.carte_reserve_valide_1arg(this,niveau_carte) != 0){
-			joueur.reserveCarte(this.pioche.get(niveau_carte).get(this.pioche.size() - 1), this.jetons_disponibles);
-			return 1;
-		}
-		System.out.println("Erreur les cartes de ce niveau ne sont plus disponibles! Vous recommencez votre tour ");
-		return -1;		
-
-	}
 	
-	/**
-	 * This method handles the whole process necessary to make the user obtain ressources
-	 * 
-	 * @param joueur
-	 *       the player who his concerned by the purchase
-	 *       carte
-	 *       the card that the players want to reserve
-	 * @return 
-	 * an int which represents either everything occured well or not
-	 * 
-	 * 1 = everything worked
-	 * -1 = a problem occured the user has to redo his turn
-	 */
-	private int validationReservationCartePlateau(Joueur joueur, HashMap<Integer, Integer> carte) {
-		Objects.requireNonNull(joueur);
-		Objects.requireNonNull(carte);
-		var niveau_carte = carte.entrySet().stream().findFirst().get().getKey();
-		var num_carte =  carte.entrySet().stream().findFirst().get().getValue();;
-		if(Saisie.carte_reserve_valide_2arg(this,niveau_carte,num_carte) != 0){
-			joueur.reserveCarte(this.board.get(niveau_carte).get(num_carte), this.jetons_disponibles);
-			this.piocheOneCard(niveau_carte, num_carte);
-			return 1;
-		}
-			System.out.println("Erreur ce numéro de carte n'existe pas, vous recommencez votre tour !");
-			return -1;		
-	}	
 	
 	/**
 	 * Allows the users to choose the number of player they wants.
@@ -589,3 +343,4 @@ public class ModeI implements Mode {
 		return this.giveNbPlayersPossible();	
 	}
 }
+

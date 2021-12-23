@@ -123,34 +123,25 @@ public class ModeII implements Mode {
 	 * @param mode
 	 *        Game mode
 	 */
-	public void initialisePartie(int mode) {
+	public void initialisePartie() {
 		
 		this.initialiseOrdreJoueurs();
 		this.initialiseJetons();
 	
-		//Mode de jeu 1
-		if(mode == 1) {
+		try{
+			this.loadDeck(Path.of("src/Cartes_Devs.txt"));
 			
-			this.initialisePioche();
-			this.piocheFourCards(1);
-			
-		}else {
-			
-			try{
-				this.loadDeck(Path.of("src/Cartes_Devs.txt"));
-				
-			}catch(IOException e) {
-		    	System.out.println(e.getMessage());
-		    	System.exit(1);
-		    
-		    }
-			
-			this.piocheFourCards(1);
-			this.piocheFourCards(2);
-			this.piocheFourCards(3);
-			
-			this.initialiseTuiles();
-		}
+		}catch(IOException e) {
+	    	System.out.println(e.getMessage());
+	    	System.exit(1);
+	    
+	    }
+		
+		this.piocheFourCards(1);
+		this.piocheFourCards(2);
+		this.piocheFourCards(3);
+		
+		this.initialiseTuiles();
 	}
 	
 	/**
@@ -282,6 +273,7 @@ public class ModeII implements Mode {
 	 * Initialise all the available tokens. There are 7 tokens available by color.
 	 */
 	private void initialiseJetons() {
+		
 		this.jetons_disponibles.put("Rouge", 7);	/*On mettra une constante dans la classe pour 7 jetons*/
 		this.jetons_disponibles.put("Vert", 7);
 		this.jetons_disponibles.put("Bleu", 7);
@@ -289,32 +281,6 @@ public class ModeII implements Mode {
 		this.jetons_disponibles.put("Jaune", 5);
 		this.jetons_disponibles.put("Blanc", 7);
 	}
-	
-	/**
-	 * Initialize the deck made up of cards in a random manner. Each card has one of the following colors
-	 * following colors: Red, Green, Black, Blue, White, Yellow, White.
-	 */
-	private void initialisePioche() {
-		
-		/*Les cartes de la pioche ne peuvent que possèder ces couleurs*/
-		var couleurs = List.<String>of("Rouge", "Vert", "Noir", "Bleu", "Blanc");
-		
-		/*Pour chaque couleur on crée 8 cartes*/
-		for(var elem : couleurs) {
-			for(int i = 0; i < 8 ;i++) {
-				
-				var map = new HashMap<String, Integer>();
-				map.put(elem, 1);
-				
-				this.pioche.get(1).add(new CarteDev(0,elem,3,null,map));
-				this.taille_pioche += 1;
-			}
-		}
-		
-		/*On mélange la pioche*/
-		Collections.shuffle(this.pioche.get(1));
-	}
-	
 	
 	/**
 	 * Load the development card where the informations are in a file. It makes the picks.
@@ -392,19 +358,22 @@ public class ModeII implements Mode {
 		Objects.requireNonNull(joueur);
 		Objects.requireNonNull(this);
 		Objects.requireNonNull(carte_numero);
+		
 		if(carte_numero <= 0) {
 			return -1;
 		}
+		
 		//3 lignes
 		if(joueur.acheteCarte(joueur.reserve().get(carte_numero-1), this)) {
+			
 			var carte_delete = joueur.reserve().get(carte_numero-1);
 			joueur.reserve().remove(carte_delete);
 			System.out.println("\n Votre achat a été réalisé avec succès ! \n");
 			return 1;
+			
 		}
-		/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent
-		 *  de force car il ne peut pas se payer cette carte*/
-			/*tour_valide = -1;*/
+		
+		/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent de force car il ne peut pas se payer cette carte:  tour_valide = -1;*/
 		System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
 		return -1;
 	}
@@ -471,25 +440,23 @@ public class ModeII implements Mode {
 	 * 0 = transaction canceled by the user
 	 * -1 = transaction failed
 	 */
-	public int achatCarte(Joueur joueur, int mode_jeu, Affichage affichage) {
+	public int achatCarte(Joueur joueur, Affichage affichage) {
 		
 		affichage.showBoard(this);
 		
 		Objects.requireNonNull(this);
 		Objects.requireNonNull(joueur);
 		
-		if(mode_jeu != 1 && mode_jeu != 2) {
-			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
-		}
-		var choix = Saisie.choixAchatCarte(this, mode_jeu, affichage);
+		var choix = Saisie.choixAchatCarte(this, affichage);
 		
-		/* cas où l'utilisateur achète une carte non-réservée*/
+		/*Carte du Board*/
 		if(choix == 1) {
-			var carte = Saisie.achatCarteNonReservee(mode_jeu);
+			
+			var carte = Saisie.achatCarteNonReservee(2);
 			return validationAchatNonReserve(joueur, carte);
 		}
 		
-		/* cas où l'utilisateur achète une carte réservée*/
+		/*Carte Reserve*/
 		var carte = Saisie.achatCarteReservee(joueur, affichage);
 		return validationAchatReserve(joueur, carte);
 	}

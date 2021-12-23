@@ -337,21 +337,15 @@ public class Saisie {
 	 * the game state 
 	*  @return the new game state
 	 */
-	public static int choixAchatCarte(Mode game, int mode_jeu, Affichage affichage) {
+	public static int choixAchatCarte(Mode game, Affichage affichage) {
 		
 		Objects.requireNonNull(game);
-		if(mode_jeu != 1 && mode_jeu != 2) {
-			throw new IllegalArgumentException("mode_jeu must be 1 or 2 ");
-		}
-		/*--------- Achat de cartes --------------*/
+
 		affichage.showBoard(game);
-		/* on oblige l'utilisateur a acheter une carte face visible si il est en mode de jeu 1*/
-		if(mode_jeu == 2) {
-			System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
-			return Saisie.choixIntervalle(1, 2);
-		}
-		/* on contraint le user à acheter une carte face visible car ce mode à des possibilités limitées*/
-			return 1;
+		
+		System.out.println("\n1) Acheter une carte face visible\n2) Acheter une carte réservée");
+		return Saisie.choixIntervalle(1, 2);
+
 	}
 	
 	/**
@@ -362,6 +356,7 @@ public class Saisie {
 	*  @return an Hashmap which contains the card data : its number and its level. key = level, value = number
 	 */
 	public static HashMap<Integer, Integer> achatCarteNonReservee(int mode_jeu) {
+		
 		if(mode_jeu != 1 && mode_jeu != 2) {
 			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
 		}
@@ -369,6 +364,7 @@ public class Saisie {
 		/* on attribue à ligne_choosen la valeur un par défaut, elle sera toujours utilisée telle quelle si on est dans le mode de jeu 1*/
 		int ligne_choosen = 1;
 		System.out.println("\n\nChoisissez le numéro de la carte à acheter \n");
+		
 		if(mode_jeu != 1) {
 			System.out.println("(Niveau - N° Carte)");	
 			var tab = Saisie.choixCarte();
@@ -524,4 +520,4 @@ public class Saisie {
 		
 		System.out.println(isExistingColours("Rouge"));
 	}
-
+}

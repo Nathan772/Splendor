@@ -1,4 +1,3 @@
-
 /**
  * Declaration of the type Partie. It represents a game of Splendor
  * 
@@ -67,7 +66,7 @@ public class Partie {
 		
 		Saisie.saisieJoueurs(game, game_mode, game.choixNbJoueurs());
 		
-		game.initialisePartie(game_mode);
+		game.initialisePartie();
 		
 		while(!endgame) {
 			/* on affiche les infos des users et du plateau ssi le tour précédent s'est bien passé*/
@@ -79,7 +78,7 @@ public class Partie {
 			int choice = Saisie.menuSaisie(game_mode);
 			
 			if(choice == 1){
-				tour_valide = game.achatCarte(player, game_mode, affichage);
+				tour_valide = game.achatCarte(player, affichage);
 			}
 			
 			else if(choice == 2){
@@ -102,5 +101,8 @@ public class Partie {
 		System.out.println("Félicitations : " + game.isWinner() + " !!");
 	}
 }
+
+
+
 
   

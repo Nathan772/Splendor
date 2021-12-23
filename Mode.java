@@ -6,7 +6,6 @@ import java.util.Objects;
 
 
 
-
 /**
  * 
  * 
@@ -38,9 +37,9 @@ public interface Mode {
 	public int taille_pioche();
 	
 	
-	void initialisePartie(int mode);
+	void initialisePartie();
 	
-	int achatCarte(Joueur joueur, int mode_jeu, Affichage affiche);
+	int achatCarte(Joueur joueur, Affichage affiche);
 	
 	int reservationCarte(Joueur joueur);
 	
@@ -420,10 +419,6 @@ public interface Mode {
 			
 		}
 	}
-	
-	
-	
-	
 	
 	
 	/**

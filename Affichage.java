@@ -11,4 +11,5 @@ public interface Affichage {
 	public void showBoard(Mode game);
 	public void showReserved(Joueur joueur);
 	public int showJoueur(Joueur joueur);
+	
 }
