@@ -1,34 +1,4 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
 
-public class ModeI implements Mode {
-	/**
-	 * Number of victory points
-	 */
-	private static final int VICTORY_POINTS = 15;
-	
-	/**
-	 * Players list on the game
-	 */
-	private ArrayList<Joueur> joueurs;
-	
-	/**
-	 * Pick  of dev cards
-	 */
-	private HashMap <Integer, List<CarteDev>> pioche;
-	
-	/**
-	 * Pick size
-	 */
-	private int taille_pioche;
-	
 	/**
 	 * Board of the game
 	 */
@@ -261,8 +231,10 @@ public class ModeI implements Mode {
 		
 		var niveau = carte.entrySet().stream().findFirst().get().getKey();
 		var choosen_card = carte.entrySet().stream().findFirst().get().getValue();
+		System.out.println("\n La valeur de niveau est : "+niveau);
+		System.out.println("\n La valeur de choosen_card est : " +choosen_card);
 		HashMap<Integer,Partie> res = new HashMap<Integer,Partie>();
-		if(choosen_card <= 3) {
+		if(choosen_card <= 3 && choosen_card >= 0 && niveau >= 1 && niveau <= 3) {
 		
 			if(joueur.acheteCarte(this.board().get(niveau).get(choosen_card), this)) {
 				System.out.println("\nVotre carte a été achetée avec succès !\n");
@@ -274,11 +246,6 @@ public class ModeI implements Mode {
 				System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
 				return -1;
 			}
-		}
-		/* l'utilisateur revient au menu précédent*/
-		else if(choosen_card == 4){
-			System.out.println("\n Action annulée !\n");
-			return 0;
 		}
 		/* cas où la carte n'existe pas, l'utilisateur revient au menu précédent de force car le numéro de carte n'existe pas*/
 		System.out.println("\n Ce numéro de carte n'existe pas !\n");
@@ -342,5 +309,16 @@ public class ModeI implements Mode {
 	public int choixNbJoueurs() {
 		return this.giveNbPlayersPossible();	
 	}
+	@Override
+	/**
+	 * this function handles a noble entrance from the possibility for the player to choose a noble until prestige add.
+	 *  In this specific mode there's not noble visit so, the function doesn't do anything here.
+	 */
+	public void nobleVisiting(Joueur joueur) {
+		return;
+	}
+	
+	
+	
 }
 
