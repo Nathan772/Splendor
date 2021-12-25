@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
@@ -24,7 +25,7 @@ public class Saisie {
  
 		while(!isExistingColours(text)){  //La méthode renvoie true donc on entre dans la boucle
 
-		    System.out.println("Valeur non recevable, veuillez entrer une nouvelle valeur.\n");
+		    System.out.println("Valeur non recevable, veuillez entrer une nouvelle fois la couleur.\n");
 		    text = scanner.next();  //User rentre "Vert"
 		}
 		
@@ -105,7 +106,6 @@ public class Saisie {
 			return true;	
 		}
 		System.out.println("Vous n'avez pas suffisamment de ressource de ce type, il faut réessayer.  ");
-		System.out.println("Couleur : ");
 		return false;
 	}
 	
@@ -491,11 +491,9 @@ public class Saisie {
 	 *  enables to the user to end its turn
 	 * 
 	 * 
-	 * @return int
-	 * an int which represents the card level between 1 and 3.
-	 * 
 	 */
 	public static void saisieFinTour(){
+		System.out.println("Veuillez taper sur entrée pour confirmer la fin de votre tour : \n");
 		Scanner scan = new Scanner(System.in);
 		String choix = "a";
 		do{
@@ -508,7 +506,53 @@ public class Saisie {
 		}while(choix == null);
 	}
 	
+	/**
+	 *  enables to the user to choose a noble among a list of nobles
+	 *  @param mode
+	 *  The game state
+	 *  @param joueur
+	 *  The player who will choose a noble
+	 *  @param nobles_visiting
+	 *  The nobles that the player can choose
+	 *  @return
+	 * 
+	 */
+	public static Tuile choixNoble(Mode mode, Joueur joueur,ArrayList<Tuile> nobles_visiting) {
+		var nobles_name = new StringBuilder();
+		var separator = "";
+		
+		for(var elem : nobles_visiting) {
+			
+			nobles_name.append(separator).append(elem.name());
+			separator = ", ";
+		}
+		System.out.println("\n.....Un noble vient à votre visite\nIl s'agit de....." + nobles_name + " !\n\nChoisissez en un\n\n");
+		Saisie.passer();
+		System.out.println("Nous vous rappelons que leurs cartes sont les suivantes : ");
+		Saisie.passer();
+		AffichageLigneCommande.showTuiles(mode);
+		var choix = Saisie.choixIntervalle(1,nobles_visiting.size()) -1;
+		return nobles_visiting.get(choix);
+	}
 	
+	/*
+	 * This function enables to be sure that the user had had time enough to read everything happened. 
+	 * It's just a transition function.
+	 * 
+	 */
+	public static void passer() {
+		System.out.println("Appuyez sur entrée pour continuer : ");
+		Scanner scan = new Scanner(System.in);
+		String choix = "a";
+		do{
+			try {
+				choix = scan.nextLine();
+			}catch(Exception e) {
+			choix = null;
+			System.out.println("Erreur : Veuillez taper sur entrée ");
+			}
+		}while(choix == null);
+	}
 	
 	/**
 	 * All the function's test in relation with the class Saisie.
