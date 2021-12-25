@@ -403,7 +403,7 @@ public class ModeII implements Mode {
 		var choosen_card = carte.entrySet().stream().findFirst().get().getValue();
 		HashMap<Integer,Partie> res = new HashMap<Integer,Partie>();
 		
-		if(choosen_card <= 3) {
+		if(choosen_card <= 3 && choosen_card >= 0 && niveau >= 1 && niveau <= 3) {
 		
 			if(joueur.acheteCarte(this.board().get(niveau).get(choosen_card), this)) {
 				System.out.println("\nVotre carte a été achetée avec succès !\n");
@@ -415,11 +415,6 @@ public class ModeII implements Mode {
 				System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
 				return -1;
 			}
-		}
-		/* l'utilisateur revient au menu précédent*/
-		else if(choosen_card == 4){
-			System.out.println("\n Action annulée !\n");
-			return 0;
 		}
 		/* cas où la carte n'existe pas, l'utilisateur revient au menu précédent de force car le numéro de carte n'existe pas*/
 		System.out.println("\n Ce numéro de carte n'existe pas !\n");
@@ -557,4 +552,40 @@ public class ModeII implements Mode {
 	public int choixNbJoueurs() {
 		return Saisie.choixNbJoueurs(this.giveNbPlayersPossible());	
 	}
+	
+	/**
+	 * this function handles a noble entrance from the possibility for the player to choose a noble until prestige add.
+	 *    
+	 */
+	//19 lignes
+	@Override
+	public void nobleVisiting(Joueur joueur) {
+		var nobles_visiting = new ArrayList<Tuile>();
+		if(joueur.isNobleVisiting(nobles_visiting, this.tuiles_board)) {
+			
+			Tuile noble_chosen;
+			
+			
+			if(nobles_visiting.size() == 1) {
+				
+				System.out.println("\n.....Un noble vient à votre visite\nIl s'agit de.... " + nobles_visiting.get(0).name() + " !\n");
+				noble_chosen = nobles_visiting.get(0);
+				
+			}else {
+				noble_chosen = Saisie.choixNoble(this,joueur,nobles_visiting);
+			}
+			joueur.addPrestige(noble_chosen.points_prestiges());
+			this.efface_noble(noble_chosen);
+			System.out.println("Vous avez maitnenant : " + joueur.points_prestiges());
+			System.out.println(" points de prestige ! "); 
+			Saisie.passer();
+			
+			if(this.jetons_disponibles().get("Jaune") > 0) {
+				joueur.addRessource(new Jeton("Jaune"), 1);
+				this.jetons_disponibles().put("Jaune", jetons_disponibles().get("Jaune")-1);
+			}
+		}
+	
+	}
+	
 }
