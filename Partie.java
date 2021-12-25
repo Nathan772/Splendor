@@ -79,6 +79,10 @@ public class Partie {
 			
 			if(choice == 1){
 				tour_valide = game.achatCarte(player, affichage);
+				if(tour_valide == 1) {
+					System.out.println("Le joueur après l'achat avant noble : \n");
+					affichage.showJoueur(player);
+				}
 			}
 			
 			else if(choice == 2){
@@ -92,17 +96,15 @@ public class Partie {
 				tour_valide = game.reservationCarte(player);
 			}
 			
-			//player.nobleVisiting();
 			//endgame = isEndGame(); 	// Mettre une fonction de fin de tour en tant que non default de MODE
-			if(tour_valide == 1)
+			if(tour_valide == 1) {
+				game.nobleVisiting(player);
+				affichage.showJoueur(player);
+				Saisie.saisieFinTour();
 				player_turn ++;
+			}
 		}
 		
 		System.out.println("Félicitations : " + game.isWinner() + " !!");
 	}
 }
-
-
-
-
-  
