@@ -366,16 +366,49 @@ public interface Mode {
 		/* cas où l'utilisateur veut prendre 2 jetons identiques*/
 		if(choix == 1) {
 			var res = choixDeuxJetons(joueur);
+			if(!joueur.checkNbJetons())
+				defausse(joueur);
 			return res;
 		}
 		
 		/* cas où l'utilisateur veut prendre 3 jetons différents*/
 		else if(choix == 2) {
 			var res = choixTroisJetons(joueur);
+			if(!joueur.checkNbJetons())
+				defausse(joueur);
 			return res;
 		}
 		/* cas où l'utilisateur annule son action*/
 		return 0;
+	}
+	
+	public default void defausse(Joueur joueur){
+
+		while(!joueur.checkNbJetons()) {
+					
+					System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons()-10) + "  pour en avoir 10 maximum\n");
+					AffichageLigneCommande.showJeton(joueur.ressources(), null);
+					
+					
+					
+					String jeton;
+					int quantite;
+					do{
+						System.out.println("\nJeton : \n ");
+						
+						jeton = Saisie.saisieJeton_name();
+						
+						System.out.println("Quantite : \n"); 
+						
+						quantite = Saisie.nb_jeton_defausse();
+						
+					}while(Saisie.valideDefausse(joueur, jeton, quantite) == false || joueur.NbJetons_loose(quantite) == false);
+					
+					System.out.println("\n Suppression réussie ! \n");
+					joueur.ressources().put(jeton, joueur.enleveRessource(jeton, quantite, this.jetons_disponibles()));
+					
+					this.jetons_disponibles().put(jeton, this.jetons_disponibles().get(jeton) + quantite);
+		}
 	}
 	
 	
@@ -395,21 +428,21 @@ public interface Mode {
 			
 			while(!joueur.checkNbJetons()) {
 				
-				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer pour en avoir 10 maximum\n");
+				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons()-10) + "  pour en avoir 10\n");
 				AffichageLigneCommande.showJeton(joueur.ressources(), null);
-				
-				System.out.println("\nJeton");
 				
 				String jeton;
 				int quantite;
 				do{
+					System.out.println("\nJeton : ");
+					
 					jeton = Saisie.saisieJeton_name();
 					
-					System.out.println("Quantite"); 
+					System.out.println("Quantite :"); 
 					
 					quantite = Saisie.nb_jeton_defausse();
 					
-				}while(Saisie.valideDefausse(joueur, jeton, quantite) == false || quantite > joueur.NbJetons_loose());
+				}while(Saisie.valideDefausse(joueur, jeton, quantite) == false || joueur.NbJetons_loose(quantite));
 				
 				System.out.println("\n Suppression réussie ! \n");
 				joueur.ressources().put(jeton, joueur.enleveRessource(jeton, quantite, this.jetons_disponibles()));
@@ -451,6 +484,7 @@ public interface Mode {
 	 * the number of players choosen. 
 	 */
 	public int choixNbJoueurs();
+	public void nobleVisiting(Joueur joueur);
 	
 	
 }
