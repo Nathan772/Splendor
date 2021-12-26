@@ -32,7 +32,7 @@ public class Joueur {
 	private int points_prestiges;
 	
 	/**
-	 * Player's resources (tokesn he has)
+	 * Player's resources (tokens he has)
 	 */
 	private HashMap<String, Integer> ressources;
 	
@@ -203,7 +203,7 @@ public class Joueur {
 		
 		Objects.requireNonNull(type_ressource);
 		Objects.requireNonNull(ressources_banque);
-		
+		int prix;
 		int old_val = this.ressources.get(type_ressource);	//Ressources of the player
 		
 		//New val taking in count the bonus
@@ -263,6 +263,21 @@ public class Joueur {
 		this.bonus.put(jeton_bonus.couleur(), this.bonus.get(jeton_bonus.couleur()) + 1);
 	}
 	
+	/*
+	 * this function enables the developer to choose by a cheat code the number of bonus he wants to begin the part
+	 * 
+	 * 
+	 */
+	
+	public void cheatBonus() {
+		System.out.println("Vous êtes entré dans une partie réservée au développeur. Vous pouvez vous octroyer des bonus : \n");
+		System.out.println("Couleur : \n");
+		var jeton = Saisie.saisieJeton();
+		System.out.println("Nombre : \n");
+		var quantite = Saisie.choixIntervalle(1,9);
+		this.bonus.put(jeton.couleur(), quantite);
+	}
+	
 	/**
 	 * Adding a defined amount of a player's resource.
 	 * 
@@ -294,7 +309,7 @@ public class Joueur {
 	 * 
 	 * @return True if the card has successfully been earned and false otherwise.
 	 */
-	public boolean acheteCarte(CarteDev carte, Partie game) {
+	public boolean acheteCarte(CarteDev carte, Mode game) {
 		
 		Objects.requireNonNull(carte);
 		Objects.requireNonNull(game);
@@ -309,13 +324,19 @@ public class Joueur {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
-			
+			/* ressources récupérées par la banque*/
+			var recover = val;
+			/* cas où le user n'a pas assez de ressources du type recherché sauf quand il utilise des ressources en or*/
+			if(this.ressources.get(name) < recover)
+				recover = this.ressources.get(name);
+			//System.out.println("coût de la ressource : "+val);
 			int nouv_val;
 			
 			nouv_val = this.enleveRessource(name, val, game.jetons_disponibles());
 			this.ressources.put(name, nouv_val);
-			
-			game.jetons_disponibles().put(name,  game.jetons_disponibles().get(name) + nouv_val);	
+			/*System.out.println("ressource récupérée : "+name);
+			System.out.println("quantité récupérée : "+nouv_val);*/
+			game.jetons_disponibles().put(name,  game.jetons_disponibles().get(name) + recover);	
 		}
 		
 		this.addBonus(new Jeton(carte.couleur()));
@@ -375,7 +396,7 @@ public class Joueur {
 	 * @return Returns ture if the card can be earned or false.
 	 */
 	
-	private boolean checkMoney(CarteDev card, Partie game) {
+	private boolean checkMoney(CarteDev card, Mode game) {
 		
 		Objects.requireNonNull(card);
 		Objects.requireNonNull(game);
@@ -386,16 +407,18 @@ public class Joueur {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
-			
-			if(this.ressources.get(name) < val) {
+
+			/* on vérifie que le user, grâce à ses ressources et/ou ses bonus puisses acheter la carte*/
+			if(this.ressources.get(name) + this.bonus.get(name) < val) {
 				
 				if(val_joker <= 0) {
 					return false;
 				}
-				if(val_joker + this.ressources.get(name) < val){
+				if(val_joker + this.ressources.get(name) + this.bonus.get(name) < val){
 					return false;
 				}
-				val_joker = val_joker - (val - this.ressources.get(name));
+				/* on attribue au joker une nouvelle valeujr en retirant ce qui a pu être payé avec les bonus et les ressources */
+				val_joker = val_joker - ( val - (this.ressources.get(name)+ this.bonus.get(name)) );
 			}
 		}
 		
@@ -459,11 +482,11 @@ public class Joueur {
 	}
 	
 	/**
-	 * Check give the number of token that the player have to lose
+	 * return the number of token possessed by a player
 	 * 
-	 * @return return the number of tokens that the player have to loose
+	 * @return the number of token that the player possess
 	 */
-	public int NbJetons_loose() {
+	public int NbJetons() {
 		
 		int count = 0;
 		
@@ -471,8 +494,44 @@ public class Joueur {
 			count = count + nb_jet;
 		}
 		
-		return count - 10;
+		return count;
 	}
+	
+	/**
+	 * Check if the number of token that the player want to loose isn't too many.
+	 * @arg the number of token that the player wants to loose.
+	 * @return a boolean 
+	 * it represents the possibility for the player to loose these tokens. If it's too much, it returns false.
+	 * else it returns true.
+	 */
+	public boolean NbJetons_loose(int quantite) {
+		/* cette variable enregistre le nombre de token du joueur*/
+		int count = 0;
+		
+		for(var nb_jet : this.ressources.values()) {
+			count = count + nb_jet;
+		}
+		/* le joueur souhaite retirer trop de token, action annulée*/
+		if(count - quantite < 10) {
+			System.out.println("Vous avez essayé de retirer trop de jetons... On recommence \n ");
+			return false;
+		}
+		/*le joueur retire un nombre de token acceptable*/
+		return true;
+	}
+	
+	/*public boolean NbJetons_loose(int quantite) {
+		
+		int count = 0;
+		
+		for(var nb_jet : this.ressources.values()) {
+			count = count + nb_jet;
+		}
+		if(count - quantite < 10) {
+			return false;
+		}
+		return true;
+	}*/
 
 
 	
@@ -506,6 +565,8 @@ public class Joueur {
 	
 	
 	
+	
+	
 	/**
 	 * All the test in relation with the type Joueur.
 	 * 
@@ -532,7 +593,6 @@ public class Joueur {
 	}
 
 }
-
 
 
 
