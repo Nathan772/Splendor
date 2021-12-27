@@ -588,4 +588,14 @@ public class ModeII implements Mode {
 	
 	}
 	
+	
+	
+	public void endOfTurn(Affichage affichage, Joueur player) {
+		
+		this.nobleVisiting(player);
+		
+		affichage.showJoueur(player);
+		Saisie.saisieFinTour();
+	}
+	
 }

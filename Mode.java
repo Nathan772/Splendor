@@ -45,6 +45,19 @@ public interface Mode {
 	
 	int giveNbPlayersPossible();
 	
+	void endOfTurn(Affichage affichage, Joueur player);
+	
+	
+	/**
+	 * Allows the users to choose the number of player they wants.
+	 * @return
+	 * the number of players choosen. 
+	 */
+	public int choixNbJoueurs();
+	
+	public void nobleVisiting(Joueur joueur);
+	
+	
 	
 	
 	/**
@@ -428,7 +441,7 @@ public interface Mode {
 			
 			while(!joueur.checkNbJetons()) {
 				
-				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons()-10) + "  pour en avoir 10\n");
+				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons() - 10) + "  pour en avoir 10\n");
 				AffichageLigneCommande.showJeton(joueur.ressources(), null);
 				
 				String jeton;
@@ -452,7 +465,6 @@ public interface Mode {
 			
 		}
 	}
-	
 	
 	/**
 	 * Determine who from the list of players is the winner. The winner
@@ -478,13 +490,16 @@ public interface Mode {
 		return topClassement(classement);
 	}
 	
-	/**
-	 * Allows the users to choose the number of player they wants.
-	 * @return
-	 * the number of players choosen. 
-	 */
-	public int choixNbJoueurs();
-	public void nobleVisiting(Joueur joueur);
 	
+	
+	default boolean isEndgame(Joueur player, int player_turn, boolean game_state) {
+		
+		if(player.points_prestiges() >= VICTORY_POINTS && !game_state && player_turn % this.joueurs().size() == 0) {
+			return true;
+		}
+		
+		return false;
+		
+	}
 	
 }

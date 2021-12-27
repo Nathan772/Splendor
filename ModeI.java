@@ -1,4 +1,34 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
+public class ModeI implements Mode {
+	/**
+	 * Number of victory points
+	 */
+	private static final int VICTORY_POINTS = 15;
+	
+	/**
+	 * Players list on the game
+	 */
+	private ArrayList<Joueur> joueurs;
+	
+	/**
+	 * Pick  of dev cards
+	 */
+	private HashMap <Integer, List<CarteDev>> pioche;
+	
+	/**
+	 * Pick size
+	 */
+	private int taille_pioche;
+	
 	/**
 	 * Board of the game
 	 */
@@ -319,6 +349,12 @@
 	}
 	
 	
+	public void endOfTurn(Affichage affichage, Joueur player){
+	
+		affichage.showJoueur(player);
+		Saisie.saisieFinTour();
+	}
+	
+	
 	
 }
-
