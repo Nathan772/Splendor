@@ -1,3 +1,5 @@
+package fr.umlv.game.mode;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,6 +9,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import fr.umlv.players.*;
+import fr.umlv.objects.*;
+import fr.umlv.affichage.*;
+import fr.umlv.saisie.*;
+import fr.umlv.game.Partie;
 
 /**
  * 
@@ -129,7 +137,7 @@ public class ModeII implements Mode {
 		this.initialiseJetons();
 	
 		try{
-			this.loadDeck(Path.of("src/Cartes_Devs.txt"));
+			this.loadDeck(Path.of("src/fr/umlv/data_files/Cartes_Devs.txt"));
 			
 		}catch(IOException e) {
 	    	System.out.println(e.getMessage());
@@ -190,7 +198,7 @@ public class ModeII implements Mode {
 		var all_tuiles = new ArrayList<Tuile>();
 		
 		try {
-			this.loadTuiles(Path.of("src/Tuiles.txt"), all_tuiles);
+			this.loadTuiles(Path.of("src/fr/umlv/data_files/Tuiles.txt"), all_tuiles);
 			
 		}catch(IOException e) {
 			System.out.println(e.getMessage());

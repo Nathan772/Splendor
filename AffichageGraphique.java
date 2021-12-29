@@ -1,16 +1,21 @@
+package fr.umlv.affichage;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Objects;
 
-import lib.zen5.Application;
-import lib.zen5.ApplicationContext;
-import lib.zen5.Event;
-import lib.zen5.ScreenInfo;
-import lib.zen5.Event.Action;
+import fr.umlv.zen5.Application;
+import fr.umlv.zen5.ApplicationContext;
+import fr.umlv.zen5.Event;
+import fr.umlv.zen5.ScreenInfo;
+import fr.umlv.zen5.Event.Action;
+
+import fr.umlv.game.mode.*;
+import fr.umlv.players.*;
 
 public class AffichageGraphique implements Affichage{
 	
@@ -111,11 +116,11 @@ public class AffichageGraphique implements Affichage{
 			
 			if(game.board().get(i).get(0) != null) {
 				
-				System.out.println("\n\n    -- NIVEAU " + i + " --\n\n");
+				
 				
 				for(var carte : game.board().get(i)) {
 					
-					System.out.println("\n      Carte n° " + num_card + "\n");
+					
 					
 					if(carte != null)
 						System.out.println(carte);
@@ -131,7 +136,7 @@ public class AffichageGraphique implements Affichage{
 	 * @param joueur
 	 * 	      Player given to show its game infomations 
 	 */
-	public int showJoueur(Joueur joueur) {
+	public int showJoueur(Participant joueur) {
 		
 		System.out.println("Joueur : " + joueur.pseudo() + "\n\nPoints de prestiges : " + joueur.points_prestiges() + "\n\nRessources : \n");
 		System.out.println("Joueur :  " + "\n");
@@ -165,7 +170,7 @@ public class AffichageGraphique implements Affichage{
 	 * @param joueur
 	 * 		  Player given.
 	 */
-	public void showReserved(Joueur joueur) {
+	public void showReserved(Participant joueur) {
 		
 		Objects.requireNonNull(joueur);
 		
@@ -180,6 +185,16 @@ public class AffichageGraphique implements Affichage{
 			System.out.println(elem + "\n");
 		}
 	}
+	
+	
+	
+	
+		
+
+	
+	
+	
+	
 	
 	
 	static class Area {
@@ -198,23 +213,121 @@ public class AffichageGraphique implements Affichage{
 	        graphics.fill(ellipse);
 	      });
 	    }
+	    
+	    
+	    private void drawCard(ApplicationContext context, float a, float b) {
+			
+			//Rectangle2D.Float rectangle = new Rectangle2D.Float(0, 0, 0, 0);
+		    
+		    
+		     context.renderFrame(graphics -> {
+		    	 
+		    	 Rectangle2D.Float rectangle = new Rectangle2D.Float(0, 0, 0, 0);
+		    	 
+		    	 
+		    	 
+		        // hide the previous rectangle
+		        graphics.setColor(Color.ORANGE);
+		        graphics.fill(rectangle);
+		        
+		        // show a new ellipse at the position of the pointer
+		        graphics.setColor(Color.WHITE);
+		        
+		        
+		        rectangle = new Rectangle2D.Float(a, b , 215 , 300);
+
+		        graphics.fill(rectangle);
+		        
+		        
+		        graphics.setColor(Color.BLACK);
+		    	 rectangle = new Rectangle2D.Float(a + 15, b + 15, 20, 20);
+		    	 graphics.fill(rectangle);
+		    	 
+		        
+		        
+		        
+		       drawGem(context, a + 20, b + 200 , "Bleu"); 
+		       
+		       drawGem(context, a + 20, b + 235, "Rouge");
+		        
+		       	 graphics.setColor(Color.WHITE);
+		    	 graphics.setFont(new Font("SansSerif", Font.BOLD, 14));
+		    	 graphics.drawString("4", a + 20, b + 30);
+		    	 
+		    	drawGem(context, a + (200 - 30) ,b + 15,"Bleu");
+		    	
+		    	graphics.setColor(Color.BLACK);
+		    	graphics.setFont(new Font("SansSerif", Font.BOLD, 14));
+		    	 graphics.drawString("Venise", a + 75, b + 125);
+		        
+		      });
+		}  
+	}
+	
+	
+	private static void drawGem(ApplicationContext context, float a, float b, String color){
+		
+		context.renderFrame(graphics -> {
+			
+	    	 Ellipse2D.Float cercle = new Ellipse2D.Float(a, b, 25, 25);
+	    
+	        
+	    	 // show a new ellipse at the position of the pointer
+	    	 graphics.setColor(Color.WHITE);
+
+	    	 if(color.equals("Rouge")) {
+	    		 graphics.setColor(Color.RED);
+	    	 }
+	    	 
+	    	 if(color.equals("Bleu")) {
+	    		 graphics.setColor(Color.BLUE);
+	    	 }
+	    	 
+	    	 if(color.equals("Blanc")) {
+	    		 graphics.setColor(Color.WHITE);
+	    	 }
+	    	 
+	    	 if(color.equals("Vert")) {
+	    		 graphics.setColor(Color.GREEN);
+	    	 }
+	    	 
+	    	 graphics.fill(cercle);		
+	    	 
+	    	 graphics.setColor(Color.WHITE);
+	    	 graphics.setFont(new Font("SansSerif", Font.BOLD, 14));
+	    	 graphics.drawString("4", a + 8, b + 18);
+
+	      });
 	}
 	
 	public static void main(String[] args) {
 		
 		
+		
 		Application.run(Color.ORANGE, context -> {
 		      
+			
+			
+				
+			
+			
 		      // get the size of the screen
 		      ScreenInfo screenInfo = context.getScreenInfo();
 		      float width = screenInfo.getWidth();
 		      float height = screenInfo.getHeight();
 		      System.out.println("size of the screen (" + width + " x " + height + ")");
 		      
+		      /**/
 		      context.renderFrame(graphics -> {
 		        graphics.setColor(Color.ORANGE);
 		        graphics.fill(new  Rectangle2D.Float(0, 0, width, height));
 		      });
+		      
+		      
+		      Area area2 = new Area();
+				
+				
+		      area2.drawCard(context, 50, 50);
 		      
 		      Area area = new Area();
 		      
@@ -232,7 +345,7 @@ public class AffichageGraphique implements Affichage{
 		        System.out.println(event);
 		        
 		        Point2D.Float location = event.getLocation();
-		        area.draw(context, location.x, location.y);
+		        area.drawCard(context, location.x, location.y);
 		      }
 		    });
 	}
