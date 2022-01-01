@@ -1,21 +1,31 @@
+package fr.umlv.objects;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
+ * Representation of a Noble card. It is represented by it name, it cost and the points value it gaves
+ * to the user.
  * 
- * @author dylandejesus
+ * @author dylandejesus nathanbilingi
  */
-record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) implements Carte{
+public record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) implements Carte{
+	
 	
 	/**
-	 *
+	 * Create a Noble Card from the information taken on a String line. The informations of the 
+	 * line must be separated by a character : " - ", then with these informations it creates a card.
 	 * 
-	 * @param line
-	 * 
-	 * @return 
+	 * @param line 
+	 *        Formatted String line
+	 *        
+	 * @return Noble card created
 	 */
 	public static Tuile fromText(String line) {
+		
+		Objects.requireNonNull(line);
 		
 		var couleurs = List.of("Blanc", "Rouge", "Bleu", "Noir", "Vert");
 		var tab = line.split(" - ");
@@ -35,20 +45,26 @@ record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) i
 		return new Tuile(tab[1], cout,  Integer.parseInt(tab[0]));
 	}
 	
-	
-	
-	
-	private static String chaineFormatte(String name_card) {	//FONCTION QUI SERAIT À METTRE DANS UNE INTERFACE DE CARTEDEV		
+	/**
+	 * Returns a formatted String of a String given. It creates a new String as it can write properly
+	 * the name of a Noble card.
+	 * 
+	 * @param name_card
+	 *        Name of the card that must be formatted
+	 * 
+	 * @return The new formatted name
+	 */
+	private static String chaineFormatte(String name_card) {			
 		
 		if(name_card == null) {
 			return "|        mine        |\n";
 		}
+		
 		int nb_espaces = (20 - name_card.length()) / 2;
 		var chaine = new StringBuilder();
 		var espaces = new StringBuilder();
 		
 		chaine.append("|");
-		
 		
 		for(var i = 0; i < nb_espaces ;i++) {
 			espaces.append(" ");
@@ -65,10 +81,8 @@ record Tuile(String name, HashMap<String, Integer> cout, int points_prestiges) i
 		return chaine.toString();
 	}
 	
-	
-	
 	/**
-	 * String représentation of a noble.
+	 * String représentation of a noble. It's a card representation drawn on the console.
 	 */
 	@Override
 	public String toString() {

@@ -1,9 +1,12 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Objects;
+package fr.umlv.objects;
 
+
+/**
+ * Declaration of the interface which is the super type of the types CarteDev & Tuile.
+ * (It hasn't been well developped yet)
+ * 
+ * @author dylandejesus nathanbilingi
+ */
 public  interface Carte {
 	//public Carte fromText(String line);
 }

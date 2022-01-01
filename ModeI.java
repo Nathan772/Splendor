@@ -1,3 +1,5 @@
+package fr.umlv.game.mode;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,6 +9,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+
+import fr.umlv.players.*;
+import fr.umlv.objects.*;
+import fr.umlv.affichage.*;
+import fr.umlv.saisie.*;
+import fr.umlv.game.Partie;
 
 public class ModeI implements Mode {
 	/**
@@ -229,7 +238,7 @@ public class ModeI implements Mode {
 				var map = new HashMap<String, Integer>();
 				map.put(elem, 1);
 				
-				this.pioche.get(1).add(new CarteDev(0,elem,3,null,map));
+				this.pioche.get(1).add(new CarteDev(0,elem,3,"mine"+ "(" +  elem + ")",map));
 				this.taille_pioche += 1;
 			}
 		}

@@ -1,8 +1,14 @@
+package fr.umlv.game.mode;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import fr.umlv.players.*;
+import fr.umlv.objects.*;
+import fr.umlv.affichage.*;
+import fr.umlv.saisie.*;
 
 
 
