@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -21,6 +22,26 @@ import fr.umlv.objects.Tuile;
 import fr.umlv.players.*;
 
 public class AffichageGraphique implements Affichage{
+	
+	
+	/**
+	 * Champs context de l'objet graphique
+	 */
+	private ApplicationContext context; 
+	
+	
+	public AffichageGraphique() {
+		
+		Application.run(Color.ORANGE, context -> {
+		
+			this.context = context;
+			//start_game();
+			
+		});
+	}
+	
+	
+	
 	
 	
 	/**
@@ -255,6 +276,87 @@ public class AffichageGraphique implements Affichage{
 	  
 	    
 	    
+	    private static void drawBoxInstructions(ApplicationContext context, String instructions){
+	    	
+	    	context.renderFrame(graphics -> {
+	    		
+	    		
+	    		var x  = context.getScreenInfo().getWidth();
+	    		var y = context.getScreenInfo().getHeight();
+	    		
+	    		var rectangle = new Rectangle2D.Float(x - ((25 * x) / 100), ((5 * y) / 100), ((20 * x) / 100) , ((20 * y) / 100));
+	    		
+	    		graphics.setColor(Color.BLACK);
+	    		
+	    		graphics.fill(rectangle);
+	    		
+	    		
+	    		graphics.setColor(Color.WHITE);
+	    		
+	    		graphics.setFont(new Font("SansSerif", Font.BOLD, 10));
+	    		
+	    		
+	    		
+	    		var y_offset = 1;
+	    		
+	    		for(var elem : instructions.split("\n")) {
+	    			graphics.drawString(elem, x - ((25 * x) / 100) + ((2 * x) / 100), ((5 * y) / 100) + (((5 * y) / 100) * y_offset));
+	    			
+	    			y_offset ++;
+	    		}
+	    		
+	    		
+	    		
+	    		
+	    	});
+	    	
+	    	
+	    }
+	    
+	    
+	    private static void drawBoxActions(ApplicationContext context, ArrayList<String> actions){
+	    	
+	    	context.renderFrame(graphics -> {
+	    		
+	    		
+	    		var x  = context.getScreenInfo().getWidth();
+	    		var y = context.getScreenInfo().getHeight();
+	    		
+	    		var rectangle = new Rectangle2D.Float(((5 * x) / 100), ((5 * y) / 100), ((20 * x) / 100) , ((20 * y) / 100));
+	    		
+	    		graphics.setColor(Color.BLACK);
+	    		
+	    		graphics.fill(rectangle);
+	    		
+	 
+	    		
+	    		
+	    		
+	    		
+	    		
+	    		var y_offset = 1;
+	    		
+	    		graphics.setColor(Color.RED);
+	    		graphics.setFont(new Font("SansSerif", Font.ITALIC, 12));
+	    		
+	    		for(var elem : actions) {
+	    			
+	    		
+	    			graphics.drawString(elem, ((5 * x) / 100) + ((1 * x) / 100), ((5 * y) / 100) + (((5 * y) / 100) * y_offset));
+	    			
+	    			graphics.setColor(Color.PINK);
+		    		graphics.setFont(new Font("SansSerif",Font.ITALIC , 10));
+	    			
+	    			y_offset ++;
+	    		}
+	    		
+	    		
+	    		
+	    		
+	    	});
+	    	
+	    	
+	    }
 	    
 	    
 	    private void drawCardNoble(ApplicationContext context, float a, float b, int largeur, int hauteur, Tuile card) { // À changer avec l'interface Carte pour aussi faire les nobles
@@ -290,9 +392,13 @@ public class AffichageGraphique implements Affichage{
 		        
 		    	 /*PRICE*/
 		        
-		    	 drawGem(context, a + ((5 * largeur) / 100), b + ((45 * hauteur) / 100), 15, 7 , "Bleu"); 
-		       
-		    	 drawGem(context, a + ((5 * largeur) / 100), b + ((45 * hauteur) / 100) + 20 , 15, 7,  "Rouge");	/*20 = decalage entre les prix*/
+		    	 var nb_carte = 0;
+		    	 
+		    	 for(var price : card.cout().entrySet()) {
+		    		 drawGem(context, a + ((5 * largeur) / 100), b + ((45 * hauteur) / 100) + (nb_carte * 20), 15, price.getValue() , price.getKey());
+		    		 
+		    		 nb_carte ++;
+		    	 }
 		        
 		       	 graphics.setColor(Color.WHITE);
 		       	 
@@ -301,9 +407,10 @@ public class AffichageGraphique implements Affichage{
 		    	 
 		    
 		    	
-		    	graphics.setColor(Color.BLACK);
-		    	graphics.setFont(new Font("SansSerif", Font.BOLD, 10));
-		    	graphics.drawString(card.name(), a + ((card.name().length() * 10) / 2) , b + ((30 * hauteur) / 100));
+		    	 int fontsize = fontSize(card.name(), largeur);
+			     graphics.setFont(new Font("SansSerif", Font.BOLD, fontsize));
+
+			     graphics.drawString(card.name(), a + ((largeur / 2) - largeur / 4) + 1, b + ((30 * hauteur) / 100));
 		        
 		     });
 		}  
@@ -362,12 +469,29 @@ public class AffichageGraphique implements Affichage{
 		    	drawGem(context, a + (largeur - ((10 * largeur) / 100) - (13 / 2)), b + ((2 * hauteur) / 100), 13, -1 ,card.couleur()); // 13 = taille
 		    	
 		    	graphics.setColor(Color.BLACK);
-		    	graphics.setFont(new Font("SansSerif", Font.BOLD, 10));
+		    	
+		    	
+		    	int fontsize = fontSize(card.object(), largeur);
+		    	graphics.setFont(new Font("SansSerif", Font.BOLD, fontsize));
 
-		    	graphics.drawString(card.object(), a + ((card.object().length() * 10) / 2) , b + ((30 * hauteur) / 100));
+		    	graphics.drawString(card.object(), a + ((largeur / 2) - largeur / 4) + 1, b + ((30 * hauteur) / 100));
 		        
 		     });
 		}  
+	    
+	    
+	    
+	    private static int fontSize(String message, int taille) {
+	    	
+	    	int font = taille / 10;
+	    	
+	    	while ((message.length() * font) > (taille + ((10 * taille) / 100))) {
+	    		font--;
+	    	}
+	   
+	    	
+	    	return font;
+	    }
 	    
 	    
 	    private void drawCardPioche(ApplicationContext context, float a, float b, int largeur, int hauteur, String val) { // À changer avec l'interface Carte pour aussi faire les nobles
@@ -474,7 +598,9 @@ public class AffichageGraphique implements Affichage{
 		var affichage = new AffichageGraphique();
 		
 		
+		
 		Mode game = new ModeII();
+		
 		
 		game.addPlayer(new Joueur("Remi", 19));
 		game.addPlayer(new Joueur("Remi", 19));
@@ -521,9 +647,21 @@ public class AffichageGraphique implements Affichage{
 		        Point2D.Float location = event.getLocation();
 		        showBoardGraph(context, game, Math.round(width) / 15, Math.round(height) / (5 + 1)); /*15 = nombres de cartes par lignes, 5 = nombre de piles*/
 		        
-		        affichage.showJeton(game.jetons_disponibles(), "", context);
+		        showJeton(game.jetons_disponibles(), "", context);
 		        
-		        affichage.showTuiles(context, game, Math.round(width) / 15, Math.round(height) / (5 + 1));
+		        showTuiles(context, game, Math.round(width) / 15, Math.round(height) / (5 + 1));
+		        
+		        area.drawBoxInstructions(context, "1) Acheter une carte \n2) Prendre des ressources \n3) Réserver une carte\n ");
+		        
+		        
+		        var list = new ArrayList<String>();
+		        
+		        list.add("Your turn Remi");
+		        list.add("Card has successfully been bougth");
+		        list.add("Action impossible");
+		        
+		        area.drawBoxActions(context, list);
+		       
 		      }
 		    });
 	}
