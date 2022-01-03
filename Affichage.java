@@ -1,3 +1,7 @@
+package fr.umlv.affichage;
+
+import fr.umlv.game.mode.*;
+import fr.umlv.players.*;
 
 /**
  * Interface représentant la manière d'affichage. On y trouve
@@ -9,7 +13,7 @@ public interface Affichage {
 
 	public void showPlateau(Mode game, int mode);
 	public void showBoard(Mode game);
-	public void showReserved(Joueur joueur);
-	public int showJoueur(Joueur joueur);
+	public void showReserved(Participant joueur);
+	public int showJoueur(Participant joueur);
 	
 }

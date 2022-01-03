@@ -1,3 +1,11 @@
+package fr.umlv.game;
+
+import fr.umlv.players.*;
+import fr.umlv.game.mode.*;
+import fr.umlv.affichage.*;
+import fr.umlv.saisie.*;
+
+
 /**
  * Declaration of the type Partie. It represents a game of Splendor
  * 
@@ -49,19 +57,21 @@ public class Partie {
 		return null;
 	}
 	
-	/**
-	 * It represents the course of a Splendor game.		   
-	 */
-	public static void main(String[] args) {
+	
+	private static void choiceActionTurn(){
+		
+	}
+	
+	
+	public static void startGame(Affichage affichage) {
 		
 		boolean endgame = false;
 		int player_turn = 0;
 		Joueur player;
 		int tour_valide = 1;
+		
 		int game_mode = Saisie.saisieMode();
-		int affichage_mode = Saisie.saisieAffichage();
-				
-		Affichage affichage = createAffichage(affichage_mode); /*Rajouter un objet de l'interface Affichage*/
+		
 		Mode game = createMode(game_mode);
 		
 		Saisie.saisieJoueurs(game, game_mode, game.choixNbJoueurs());
@@ -109,6 +119,23 @@ public class Partie {
 		}
 		
 		System.out.println("Félicitations : " + game.isWinner() + " !!");
+	}
+	
+	/**
+	 * It represents the course of a Splendor game.		   
+	 */
+	public static void main(String[] args) {
+		
+		
+		
+		int affichage_mode = Saisie.saisieAffichage();
+				
+		Affichage affichage = createAffichage(affichage_mode); /*Rajouter un objet de l'interface Affichage*/
+		
+		if(affichage_mode == 1) {
+			startGame(affichage);
+		}
+		
 	}
 }
 

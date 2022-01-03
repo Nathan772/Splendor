@@ -1,6 +1,17 @@
+package fr.umlv.affichage;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.awt.Color;
 import java.lang.StringBuilder;
+
+import fr.umlv.game.Partie;
+import fr.umlv.game.mode.*;
+import fr.umlv.players.*;
+import fr.umlv.zen5.Application;
+import fr.umlv.zen5.ApplicationContext;
+
 
 /**
  * Declaration of the class AffichageLigneCommande. It gathers all the functions thah print objets on
@@ -9,6 +20,10 @@ import java.lang.StringBuilder;
  * @author dylandejesus nathanbilingi
  */
 public class AffichageLigneCommande implements Affichage{
+	
+	
+	
+	
 	
 	/**
 	 * Print the game board of a game.
@@ -123,7 +138,7 @@ public class AffichageLigneCommande implements Affichage{
 	 * @param joueur
 	 * 	      Player given to show its game infomations 
 	 */
-	public int showJoueur(Joueur joueur) {
+	public int showJoueur(Participant joueur) {
 		System.out.println("Joueur : " + joueur.pseudo() + "\n\nPoints de prestiges : " + joueur.points_prestiges() + "\n\nRessources : \n");
 		System.out.println("Joueur :  " + "\n");
 		showJeton(joueur.ressources(), "JETON");
@@ -155,7 +170,7 @@ public class AffichageLigneCommande implements Affichage{
 	 * @param joueur
 	 * 		  Player given.
 	 */
-	public void showReserved(Joueur joueur) {
+	public void showReserved(Participant joueur) {
 		
 		Objects.requireNonNull(joueur);
 		
