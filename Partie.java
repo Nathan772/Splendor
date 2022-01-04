@@ -44,7 +44,7 @@ public class Partie {
 	 * 
 	 * @return The Object Mode (ModeI or ModeII)
 	 */
-	private static  Affichage createAffichage(int type){
+	public static  Affichage createAffichage(int type){
 		
 		if(type == 1) {
 			return new AffichageLigneCommande();
@@ -99,7 +99,7 @@ public class Partie {
 			}
 			
 			else if(choice == 2){
-				tour_valide = game.priseRessource(player);
+				tour_valide = game.priseRessource(player, affichage);
 			}
 			
 			else if(choice == 3) {
@@ -124,17 +124,10 @@ public class Partie {
 	/**
 	 * It represents the course of a Splendor game.		   
 	 */
-	public static void main(String[] args) {
+	public static void main(Affichage affichage) {
 		
 		
 		
-		int affichage_mode = Saisie.saisieAffichage();
-				
-		Affichage affichage = createAffichage(affichage_mode); /*Rajouter un objet de l'interface Affichage*/
-		
-		if(affichage_mode == 1) {
-			startGame(affichage);
-		}
 		
 	}
 }

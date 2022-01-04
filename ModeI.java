@@ -353,7 +353,7 @@ public class ModeI implements Mode {
 	 * this function handles a noble entrance from the possibility for the player to choose a noble until prestige add.
 	 *  In this specific mode there's not noble visit so, the function doesn't do anything here.
 	 */
-	public void nobleVisiting(Joueur joueur) {
+	public void nobleVisiting(Joueur joueur, Affichage affichage) {
 		return;
 	}
 	

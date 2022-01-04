@@ -567,7 +567,7 @@ public class ModeII implements Mode {
 	 */
 	//19 lignes
 	@Override
-	public void nobleVisiting(Joueur joueur) {
+	public void nobleVisiting(Joueur joueur, Affichage affichage) {
 		var nobles_visiting = new ArrayList<Tuile>();
 		if(joueur.isNobleVisiting(nobles_visiting, this.tuiles_board)) {
 			
@@ -580,7 +580,7 @@ public class ModeII implements Mode {
 				noble_chosen = nobles_visiting.get(0);
 				
 			}else {
-				noble_chosen = Saisie.choixNoble(this,joueur,nobles_visiting);
+				noble_chosen = Saisie.choixNoble(this, affichage,joueur,nobles_visiting);
 			}
 			joueur.addPrestige(noble_chosen.points_prestiges());
 			this.efface_noble(noble_chosen);
@@ -600,7 +600,7 @@ public class ModeII implements Mode {
 	
 	public void endOfTurn(Affichage affichage, Joueur player) {
 		
-		this.nobleVisiting(player);
+		this.nobleVisiting(player, affichage);
 		
 		affichage.showJoueur(player);
 		Saisie.saisieFinTour();

@@ -1,5 +1,7 @@
 package fr.umlv.affichage;
 
+import java.util.HashMap;
+
 import fr.umlv.game.mode.*;
 import fr.umlv.players.*;
 
@@ -12,8 +14,12 @@ import fr.umlv.players.*;
 public interface Affichage {
 
 	public void showPlateau(Mode game, int mode);
+	public void showTuiles(Mode game);
+	public void showJeton(HashMap<String, Integer> ressources, String message);
 	public void showBoard(Mode game);
 	public void showReserved(Participant joueur);
 	public int showJoueur(Participant joueur);
+	
+	public void launchAffichage();
 	
 }

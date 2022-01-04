@@ -61,7 +61,7 @@ public interface Mode {
 	 */
 	public int choixNbJoueurs();
 	
-	public void nobleVisiting(Joueur joueur);
+	public void nobleVisiting(Joueur joueur, Affichage affichage);
 	
 	
 	
@@ -374,9 +374,9 @@ public interface Mode {
 	 * 0 = the player has canceled his choice
 	 * -1 = a problem occured the user has to redo his turn
 	 */
-	public default int priseRessource(Joueur joueur){
+	public default int priseRessource(Joueur joueur, Affichage affichage){
 
-		AffichageLigneCommande.showJeton(this.jetons_disponibles(), "JETON");
+		affichage.showJeton(this.jetons_disponibles(), "JETON");
 		
 		Objects.requireNonNull(joueur);
 		
@@ -386,7 +386,7 @@ public interface Mode {
 		if(choix == 1) {
 			var res = choixDeuxJetons(joueur);
 			if(!joueur.checkNbJetons())
-				defausse(joueur);
+				defausse(joueur, affichage);
 			return res;
 		}
 		
@@ -394,19 +394,19 @@ public interface Mode {
 		else if(choix == 2) {
 			var res = choixTroisJetons(joueur);
 			if(!joueur.checkNbJetons())
-				defausse(joueur);
+				defausse(joueur, affichage);
 			return res;
 		}
 		/* cas où l'utilisateur annule son action*/
 		return 0;
 	}
 	
-	public default void defausse(Joueur joueur){
+	public default void defausse(Joueur joueur, Affichage affichage){
 
 		while(!joueur.checkNbJetons()) {
 					
 					System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons()-10) + "  pour en avoir 10 maximum\n");
-					AffichageLigneCommande.showJeton(joueur.ressources(), null);
+					affichage.showJeton(joueur.ressources(), null);
 					
 					
 					
@@ -439,7 +439,7 @@ public interface Mode {
 	 *       the player who his concerned by the checking
 	 * 
 	 */
-	public default void controleJeton(Joueur joueur) {
+	public default void controleJeton(Joueur joueur, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		
@@ -448,7 +448,7 @@ public interface Mode {
 			while(!joueur.checkNbJetons()) {
 				
 				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons() - 10) + "  pour en avoir 10\n");
-				AffichageLigneCommande.showJeton(joueur.ressources(), null);
+				affichage.showJeton(joueur.ressources(), null);
 				
 				String jeton;
 				int quantite;

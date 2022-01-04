@@ -32,19 +32,28 @@ public class AffichageGraphique implements Affichage{
 	
 	
 	public AffichageGraphique() {
+		this.context = null;
+		this.listActions = new ArrayList<String>();
 		
-		/*Application.run(Color.ORANGE, context -> {
+	};
+	
+	
+	
+	
+	public void launchAffichage() {
+
 		
-			this.context = context;
-			this.listActions = new ArrayList<String>();
+		Application.run(Color.ORANGE, context -> {
 			
+			
+			this.context = context;
 			Partie.startGame(this);
 			
 			return;
 			
-		});*/
+		});
 	}
-	
+
 	
 	
 	
@@ -68,7 +77,7 @@ public class AffichageGraphique implements Affichage{
 		
 		showBoardGraph(context, game, Math.round(width) / 15, Math.round(height) / (5 + 1)); /*15 = nombres de cartes par lignes, 5 = nombre de piles*/
         
-        showJeton(game.jetons_disponibles(), "", context);
+        showJetonMap(game.jetons_disponibles(), "", context);
         
         showTuiles(context, game, Math.round(width) / 15, Math.round(height) / (5 + 1));
         
@@ -88,7 +97,7 @@ public class AffichageGraphique implements Affichage{
 	 * @param ressources
 	 *        Resources of tokens
 	 */
-	public static void showJeton(HashMap<String, Integer> ressources, String message, ApplicationContext context) {
+	public static void showJetonMap(HashMap<String, Integer> ressources, String message, ApplicationContext context) {
 	
 		
 		
@@ -97,7 +106,7 @@ public class AffichageGraphique implements Affichage{
 			int i = 0;
 			
 			for(var elem : ressources.entrySet()) {
-				drawGem(context, 1200, 300  + (i * 75), 35, elem.getValue(),  elem.getKey());
+				drawGem(context, 1200, 300  + (i * 75), 35, elem.getValue(),  elem.getKey());	/*Ma*/
 				
 				i++;
 				
@@ -115,23 +124,36 @@ public class AffichageGraphique implements Affichage{
 	 */
 	public void showBoard(Mode game) {
 		
-		Objects.requireNonNull(game);
-		
-		for(int i = 1 ; i < game.board().size() + 1 ; i++) {
-			
-			var num_card = 1;
-			
-			if(game.board().get(i).get(0) != null) {
-				
-				for(var carte : game.board().get(i)) {
-					
-					if(carte != null)
-						System.out.println(carte);
-					num_card ++;	
-				}
-			}
-		}
+		showPlateau(game, 0);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 
+	 * Print the available tokens on the console. It i représented as a board.
+	 * 
+	 * @param ressources
+	 *        Resources of tokens
+	 */
+	public void showJeton(HashMap<String, Integer> ressources, String message) {
+		
+		return;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -207,18 +229,13 @@ public class AffichageGraphique implements Affichage{
 	 * @param game
 	 *        Game given to show its nobles card on the board
 	 */
-	public static void showTuiles(Mode game){
+	public void showTuiles(Mode game){
 		
-		System.out.println("    -- NOBLES --   \n\n");
-		
-		for(int i = 0 ; i < game.tuiles_board().size(); i++) {
-			
-			System.out.println(game.tuiles_board().get(i));
-		}
+		showPlateau(game, 0);
 	}
 	
 	
-	public static void showTuiles(ApplicationContext context, Mode game, int largeur, int hauteur){
+	public void showTuiles(ApplicationContext context, Mode game, int largeur, int hauteur){
 		
 		System.out.println("    -- NOBLES --   \n\n");
 		
@@ -604,7 +621,8 @@ public class AffichageGraphique implements Affichage{
 		
 		Application.run(Color.ORANGE, context -> {
 			
-			
+			affichage.context = context;
+			affichage.listActions = new ArrayList<String>();
 			
 			Partie.startGame(affichage);
 			

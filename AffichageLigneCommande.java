@@ -22,7 +22,9 @@ import fr.umlv.zen5.ApplicationContext;
 public class AffichageLigneCommande implements Affichage{
 	
 	
-	
+	public void launchAffichage() {
+		Partie.startGame(this);
+	}
 	
 	
 	/**
@@ -60,7 +62,7 @@ public class AffichageLigneCommande implements Affichage{
 	 * @param ressources
 	 *        Resources of tokens
 	 */
-	public static void showJeton(HashMap<String, Integer> ressources, String message) {
+	public void showJeton(HashMap<String, Integer> ressources, String message) {
 		
 		StringBuilder chaine_tab = new StringBuilder();
 		StringBuilder chaine_noms = new StringBuilder();
@@ -139,6 +141,7 @@ public class AffichageLigneCommande implements Affichage{
 	 * 	      Player given to show its game infomations 
 	 */
 	public int showJoueur(Participant joueur) {
+		
 		System.out.println("Joueur : " + joueur.pseudo() + "\n\nPoints de prestiges : " + joueur.points_prestiges() + "\n\nRessources : \n");
 		System.out.println("Joueur :  " + "\n");
 		showJeton(joueur.ressources(), "JETON");
@@ -153,7 +156,7 @@ public class AffichageLigneCommande implements Affichage{
 	 * @param game
 	 *        Game given to show its nobles card on the board
 	 */
-	public static void showTuiles(Mode game){
+	public void showTuiles(Mode game){
 		
 		System.out.println("    -- NOBLES --   \n\n");
 		
