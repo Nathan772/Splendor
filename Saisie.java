@@ -1,7 +1,14 @@
+package fr.umlv.saisie;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
+
+import fr.umlv.objects.*;
+import fr.umlv.affichage.*;
+import fr.umlv.players.*;
+import fr.umlv.game.mode.*;
 
 /**
  * Declaration of the class Saisie. It gathers all the functions which are in relation
@@ -95,7 +102,7 @@ public class Saisie {
 		return true;
 	}
 	
-	static Boolean valideDefausse(Joueur joueur, String jeton, int nombre){
+	public static Boolean valideDefausse(Participant joueur, String jeton, int nombre){
 		if(nombre <= 0) {
 			System.out.println("Cette action est inutile car vous vous êtes défaussés de  0 jeton. ");
 			System.out.println("On recommence ! ");
@@ -109,7 +116,7 @@ public class Saisie {
 		return false;
 	}
 	
-	static int nb_jeton_defausse(){
+	public static int nb_jeton_defausse(){
 		Scanner scan = new Scanner(System.in);
 		int nb;
 		do{
@@ -434,6 +441,7 @@ public class Saisie {
 	*  an int which is the chronological order of appearance of the chosen card
 	 */
 	public static int choixJeton(){
+		
 		System.out.println("\nVoulez vous : \n\n(1) Prendre 2 jetons de la même couleur\n(2) Prendre 3 jetons de couleurs différentes "); //Mettre dans Saisie
 		System.out.println("(3) Annuler votre action \n");
 		return Saisie.choixIntervalle(1,3);
@@ -461,6 +469,7 @@ public class Saisie {
 	*  it represents the card that the user has chosen : key : its level and value : its number.
 	 */
 	public static HashMap<Integer, Integer>reservationCartePlateau() {
+		
 		/*Réservation de cartes*/
 		System.out.println("Choisissez une carte du plateau\n(Niveau - N°Carte)\n");
 		var tab = Saisie.choixCarte();
@@ -517,7 +526,7 @@ public class Saisie {
 	 *  @return
 	 * 
 	 */
-	public static Tuile choixNoble(Mode mode, Joueur joueur,ArrayList<Tuile> nobles_visiting) {
+	public static Tuile choixNoble(Mode mode, Affichage affichage,Joueur joueur, ArrayList<Tuile> nobles_visiting) {
 		var nobles_name = new StringBuilder();
 		var separator = "";
 		
@@ -530,7 +539,7 @@ public class Saisie {
 		Saisie.passer();
 		System.out.println("Nous vous rappelons que leurs cartes sont les suivantes : ");
 		Saisie.passer();
-		AffichageLigneCommande.showTuiles(mode);
+		affichage.showTuiles(mode);
 		var choix = Saisie.choixIntervalle(1,nobles_visiting.size()) -1;
 		return nobles_visiting.get(choix);
 	}
