@@ -557,8 +557,8 @@ public class ModeII implements Mode {
 	 * the number of players choosen. 
 	 */
 	@Override
-	public int choixNbJoueurs() {
-		return Saisie.choixNbJoueurs(this.giveNbPlayersPossible());	
+	public int choixNbJoueurs(Affichage affichage) {
+		return Saisie.choixNbJoueurs(this.giveNbPlayersPossible(), affichage);	
 	}
 	
 	/**

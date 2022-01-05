@@ -59,7 +59,7 @@ public interface Mode {
 	 * @return
 	 * the number of players choosen. 
 	 */
-	public int choixNbJoueurs();
+	public int choixNbJoueurs(Affichage affichage);
 	
 	public void nobleVisiting(Joueur joueur, Affichage affichage);
 	

@@ -55,6 +55,26 @@ public class AffichageLigneCommande implements Affichage{
 		}	
 	}
 	
+	
+	
+	
+	public void affichageMessageInstructionsBox(String message) {
+		affichageMessage(message);
+		
+	}
+	
+	public void affichageMessageActions(String message) {
+		affichageMessage(message);
+		
+	}
+	
+	
+	
+	public void affichageMessage(String message) {
+		System.out.println(message);
+	}
+	
+	
 	/**
 	 * 
 	 * Print the available tokens on the console. It i représented as a board.

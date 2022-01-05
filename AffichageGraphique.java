@@ -57,6 +57,62 @@ public class AffichageGraphique implements Affichage{
 	
 	
 	
+	public void affichageMessageInstructionsBox(String message) {
+		
+		var area = new Area();
+		area.drawBoxInstructions(context, message);
+		
+	}
+	
+	public void affichageMessageActions(String message) {
+		
+		
+		var area = new Area();
+		
+		
+		for(var i = 2 ; i > 0 ; i--) {
+			
+			if(i < this.listActions.size())
+				this.listActions.set(i, this.listActions.get(i - 1));
+		}
+		
+		this.listActions.set(0, message);
+		
+		area.drawBoxActions(context, this.listActions);
+		
+	}
+	
+	
+	
+	
+	
+	public void affichageMessage(String message) {
+		
+		context.renderFrame(graphics -> {
+			
+			
+			var x = context.getScreenInfo().getWidth();
+			var y = context.getScreenInfo().getHeight();
+			
+			
+			var rectangle = new Rectangle2D.Float(0, 0, x, y);
+			
+			graphics.setColor(Color.ORANGE);
+			
+			graphics.fill(rectangle);
+			
+			
+			
+			var x_center = x / 2;
+			var y_center = y / 2;
+			
+			graphics.setColor(Color.BLUE);
+			graphics.setFont(new Font("SansSerif", Font.BOLD, 20));
+			graphics.drawString(message, x_center - ((message.length() * 20) / 4) , y_center);
+			
+		});
+	}
+	
 	
 	/**
 	 * Print the game board of a game.
@@ -71,6 +127,22 @@ public class AffichageGraphique implements Affichage{
 		
 		var area = new Area();
 		
+		
+		context.renderFrame(graphics -> {
+			
+			
+			var x = context.getScreenInfo().getWidth();
+			var y = context.getScreenInfo().getHeight();
+			
+			
+			var rectangle = new Rectangle2D.Float(0, 0, x, y);
+			
+			graphics.setColor(Color.ORANGE);
+			
+			graphics.fill(rectangle);
+			
+
+		});
 		
 		float width = context.getScreenInfo().getWidth();
 		float height = context.getScreenInfo().getHeight();

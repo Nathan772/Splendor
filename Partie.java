@@ -70,11 +70,11 @@ public class Partie {
 		Joueur player;
 		int tour_valide = 1;
 		
-		int game_mode = Saisie.saisieMode();
+		int game_mode = Saisie.saisieMode(affichage);
 		
 		Mode game = createMode(game_mode);
 		
-		Saisie.saisieJoueurs(game, game_mode, game.choixNbJoueurs());
+		Saisie.saisieJoueurs(game, game_mode, game.choixNbJoueurs(affichage));
 		
 		game.initialisePartie();
 		
@@ -85,7 +85,7 @@ public class Partie {
 			
 			player = game.joueurs().get(player_turn % game.joueurs().size());
 			
-			int choice = Saisie.menuSaisie(game_mode);
+			int choice = Saisie.menuSaisie(game_mode, affichage);
 			
 			if(choice == 1){
 				

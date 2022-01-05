@@ -235,9 +235,11 @@ public class Saisie {
 	 * This variable gives information regarding the current party
 	 * @return
 	 */
-	public static int saisieMode() {
+	public static int saisieMode(Affichage affichage) {
 		int mode_jeu;
-		System.out.println("Quel mode de jeu (1 ou 2) choisissez-vous ?  => ");
+
+		affichage.affichageMessage("Quel mode de jeu (1 ou 2) choisissez-vous ?");
+		
 		mode_jeu = choixIntervalle(1,2);
 		return mode_jeu;
 	}
@@ -267,8 +269,9 @@ public class Saisie {
 	 * This variable gives information regarding the game mode (1 or 2)
 	 * @return
 	 */
-	public static int choixNbJoueurs(int max) {
-		System.out.println("Combien de joueurs participent à la partie (choisissez un nombre entre 2 et 4) ?");
+	public static int choixNbJoueurs(int max, Affichage affichage) {
+			
+		affichage.affichageMessage("Combien de joueurs participent à la partie (choisissez un nombre entre 2 et 4) ?");
 		var nb_joueurs = Saisie.choixIntervalle(2, max);
 		//saisie_joueur(game,mode_jeu,nb_joueurs);
 		return nb_joueurs;	
@@ -313,19 +316,24 @@ public class Saisie {
 	*
 	* @return it returns an int which allow to know what actions the player wants to do 
 	*/
-	public static int menuSaisie(int mode_jeu) {
+	public static int menuSaisie(int mode_jeu, Affichage affichage) {
 	        int answer;
+	        String chaine;
 
 	        if(mode_jeu != 1 && mode_jeu != 2) {
 	            throw new IllegalArgumentException(" 'mode_jeu' must be a value between 1 and 2");
 	        }
 	        
+	        chaine = "(1) Acheter une carte\n(2) Prendre des ressources\n(3) Voir mes informations";
 	    
 	        
-	        System.out.println("(1) Acheter une carte\n(2) Prendre des ressources\n(3) Voir mes informations");
+	       
 	        if(mode_jeu != 1) {
-	            System.out.println("(4) Réserver une carte");
+	            chaine = chaine + "\n(4) Réserver une carte";
 	        }
+	        
+	        
+	        affichage.affichageMessageInstructionsBox(chaine);
 	        
 	        answer = choixIntervalle(1, 4);
 	        /*if(answer == 3){

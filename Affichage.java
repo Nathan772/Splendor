@@ -20,6 +20,15 @@ public interface Affichage {
 	public void showReserved(Participant joueur);
 	public int showJoueur(Participant joueur);
 	
+	
+	
+	
+	public void affichageMessage(String message);
+	
+	public void affichageMessageInstructionsBox(String message);
+	
+	public void affichageMessageActions(String message);
+	
 	public void launchAffichage();
 	
 }

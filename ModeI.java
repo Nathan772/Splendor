@@ -345,7 +345,7 @@ public class ModeI implements Mode {
 	 * the number of player choosen. In this specific mode it must be the maximum allowed by this mode, 2, there is no choice.
 	 */
 	@Override
-	public int choixNbJoueurs() {
+	public int choixNbJoueurs(Affichage affichage) {
 		return this.giveNbPlayersPossible();	
 	}
 	@Override
