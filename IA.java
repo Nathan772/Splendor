@@ -8,6 +8,7 @@ import java.util.Objects;
 import fr.umlv.objects.*;
 import fr.umlv.saisie.*;
 import fr.umlv.affichage.Affichage;
+import fr.umlv.game.Partie;
 import fr.umlv.game.mode.Mode;
 
 public class IA implements Participant {
@@ -219,6 +220,7 @@ public class IA implements Participant {
 		
 		
 	}
+
 	
 	/**
 	 *  This method allows the player to choose a card
@@ -231,7 +233,147 @@ public class IA implements Participant {
 	 * level of the previous tested card
 	*  @return an Hashmap which contains the card data : its number and its level. key = level, value = number
 	 */
-	public static HashMap<Integer, Integer> TestachatCarteNonReserveeIA(int mode_jeu, int numero, int niveau) {
+	public static HashMap<Integer, Integer> TestAchatCarteNonReserveeIA(int mode_jeu, int numero, int niveau) {
+		
+		if(mode_jeu != 1 && mode_jeu != 2) {
+			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
+		}
+		/*
+		 * création de la carte à tester
+		 */
+		var carte = new HashMap<Integer,Integer>();
+		carte.put(numero, niveau);
+		return carte;
+		
+	}
+	
+	/**
+	 * Check if the player has enough tokens in his resources to pay the card given.
+	 *
+	 * @param card
+	 *        Card to pay
+	 *        
+	 * @return Returns ture if the card can be earned or false.
+	 */
+	
+	private boolean checkMoney(CarteDev card, Mode game) {
+		
+		Objects.requireNonNull(card);
+		Objects.requireNonNull(game);
+		
+		var val_joker = this.ressources().get("Jaune");
+		
+		for(var elem : card.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+
+			/* on vérifie que le user, grâce à ses ressources et/ou ses bonus puisses acheter la carte*/
+			if(this.ressources.get(name) + this.bonus.get(name) < val) {
+				
+				if(val_joker <= 0) {
+					return false;
+				}
+				if(val_joker + this.ressources.get(name) + this.bonus.get(name) < val){
+					return false;
+				}
+				/* on attribue au joker une nouvelle valeujr en retirant ce qui a pu être payé avec les bonus et les ressources */
+				val_joker = val_joker - ( val - (this.ressources.get(name)+ this.bonus.get(name)) );
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Addin of some points values.
+	 * 
+	 * @param val
+	 *        Points value to add
+	 */
+	public void addPrestige(int val) {
+		int result = this.points_prestiges + val;
+		
+		if(result < 0) {
+			result = 0;
+		}
+		
+		this.points_prestiges = result;
+	}
+	
+	/**
+	 * The player buys a card from the game. The card is bought if the resource
+	 * requested is possessed in sufficient quantity by the player.
+	 * 
+	 * @param carte
+	 *        Card to earn
+	 *        
+	 * @param game
+	 *        Game in which buy the card
+	 * 
+	 * @return True if the card has successfully been earned and false otherwise.
+	 */
+	public boolean acheteCarte(CarteDev carte, Mode game) {
+		
+		Objects.requireNonNull(carte);
+		Objects.requireNonNull(game);
+		
+		if(!this.checkMoney(carte, game)) {
+			return false;
+		}
+		
+		this.addPrestige(carte.points());
+		
+		for(var elem : carte.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+			/* ressources récupérées par la banque*/
+			var recover = val;
+			/* cas où le user n'a pas assez de ressources du type recherché sauf quand il utilise des ressources en or*/
+			if(this.ressources.get(name) < recover)
+				recover = this.ressources.get(name);
+			//System.out.println("coût de la ressource : "+val);
+			int nouv_val;
+			
+			nouv_val = this.enleveRessource(name, val, game.jetons_disponibles());
+			this.ressources.put(name, nouv_val);
+			/*System.out.println("ressource récupérée : "+name);
+			System.out.println("quantité récupérée : "+nouv_val);*/
+			game.jetons_disponibles().put(name,  game.jetons_disponibles().get(name) + recover);	
+		}
+		
+		this.addBonus(new Jeton(carte.couleur()));
+		this.cartes += 1;
+		
+		return true;
+	}
+	
+	/**
+	 * Add the bonus token given ti the player.
+	 * 
+	 * @param jeton_bonus
+	 *        Token considered like the bonus to add
+	 */
+	private void addBonus(Jeton jeton_bonus) {
+		
+		Objects.requireNonNull(jeton_bonus);
+		
+		this.bonus.put(jeton_bonus.couleur(), this.bonus.get(jeton_bonus.couleur()) + 1);
+	}
+	
+	/**
+	 *  This method allows the player to choose a card
+	 * 
+	 * @param mode_jeu 
+	 * the game mode choosen by the users 
+	 * @param numero 
+	 * number of the previous tested card
+	 * @param niveau 
+	 * level of the previous tested card
+	*  @return an Hashmap which contains the card data : its number and its level. key = level, value = number
+	 */
+	public static HashMap<Integer, Integer> choixAchatCarteNonReserveeIA(int mode_jeu, int numero, int niveau) {
 		
 		if(mode_jeu != 1 && mode_jeu != 2) {
 			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
