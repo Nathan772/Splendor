@@ -262,6 +262,49 @@ public class ModeI implements Mode {
 	*  1 = success
 	*  0 = the player wanted to cancel
 	 */
+	private int testAchatNonReserveIA(HashMap<Integer, Integer> carte, IA joueur) {
+		
+		Objects.requireNonNull(this);
+		Objects.requireNonNull(carte);
+		
+		var niveau = carte.entrySet().stream().findFirst().get().getKey();
+		var choosen_card = carte.entrySet().stream().findFirst().get().getValue();
+		System.out.println("\n La valeur de niveau est : "+niveau);
+		System.out.println("\n La valeur de choosen_card est : " +choosen_card);
+		HashMap<Integer,Partie> res = new HashMap<Integer,Partie>();
+		if(choosen_card <= 3 && choosen_card >= 0 && niveau >= 1 && niveau <= 3) {
+		
+			if(joueur.acheteCarte(this.board().get(niveau).get(choosen_card), this)) {
+				System.out.println("\nVotre carte a été achetée avec succès !\n");
+				this.piocheOneCard(niveau, choosen_card);	
+				return 1;
+			}
+			/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent de force car il ne peut pas se payer cette carte*/
+			else {
+				System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
+				return -1;
+			}
+		}
+		/* cas où la carte n'existe pas, l'utilisateur revient au menu précédent de force car le numéro de carte n'existe pas*/
+		System.out.println("\n Ce numéro de carte n'existe pas !\n");
+		return 0;
+	}
+	
+	/**
+	 *  This method validate or invalidate a player's buying attempt
+	 * 
+	 * @param joueur
+	 * 		   The player whom we will look at the reserve and the ressources
+	 * 
+	 * @param carte_numero
+	 *        The numbers of the card that the user wants to buy. It allows to identify it.
+	 *        
+	*  @return An int which the value indicates either the operation succeed or failed
+	*  
+	*  -1 = failure
+	*  1 = success
+	*  0 = the player wanted to cancel
+	 */
 	private int validationAchatNonReserve(Joueur joueur, HashMap<Integer, Integer> carte ) {
 		
 		Objects.requireNonNull(joueur);
