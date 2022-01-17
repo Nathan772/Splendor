@@ -11,6 +11,9 @@ import fr.umlv.affichage.Affichage;
 import fr.umlv.game.Partie;
 import fr.umlv.game.mode.Mode;
 
+/* note pour moi-même pour l'ia faire trois tentatives d'achat de carte de trois niveaux différents, du plus haut au plus bas. Tentative sur les cartes de numéro random.
+ * Si ça échoue les 3 fois, faire une autre action qui est sûre à 100%*/
+
 public class IA implements Participant {
 	
 	
@@ -193,7 +196,7 @@ public class IA implements Participant {
 		return "Joueur [pseudo= "+ this.pseudo + ", age= " + this.age + ", prestige= " + points_prestiges + ", ressources=" + this.ressources +"]"; 
 	}
 	
-	/** This function choose a random action that the IA will do.
+	/** This function choose a random action that the AI will do.
 	 * 
 	 *  the variable "achat valide" enables to be sure that the player can buy card
 	 *  if its value is true they can
@@ -203,7 +206,7 @@ public class IA implements Participant {
 	private int randomChoice(boolean achat_valide){
 		int action = (int)(100*Math.random());
 		if(achat_valide == true) {
-			/* on choisit de prendre des ressources avec 80% de chances*/
+			/* on choisit de prendre des ressources avec 50% de chances*/
 			if(action >= 0 && action <= 49)
 				return 2;
 			/* on choisit d'acheter une carte avec 30% de chances */
@@ -223,7 +226,7 @@ public class IA implements Participant {
 
 	
 	/**
-	 *  This method allows the player to choose a card
+	 *  This method allow check if the AI can buy a card and returns the card chosne
 	 * 
 	 * @param mode_jeu 
 	 * the game mode choosen by the users 
@@ -232,20 +235,25 @@ public class IA implements Participant {
 	 * @param niveau 
 	 * level of the previous tested card
 	*  @return an Hashmap which contains the card data : its number and its level. key = level, value = number
-	 */
-	public static HashMap<Integer, Integer> TestAchatCarteNonReserveeIA(int mode_jeu, int numero, int niveau) {
+	*  if it returns null, the player can't buy the caed.
+	 */ 
+	/*public HashMap<Integer, Integer> TestAchatCarteNonReserveeIA(int mode_jeu, int numero, int niveau, Mode game) {
 		
 		if(mode_jeu != 1 && mode_jeu != 2) {
 			throw new IllegalArgumentException("mode_jeu must be 1 or 2");
 		}
 		/*
 		 * création de la carte à tester
-		 */
 		var carte = new HashMap<Integer,Integer>();
+		
+		var copie = this;
+		copie.checkMoney(carte, game);
 		carte.put(numero, niveau);
 		return carte;
 		
-	}
+	}*/
+
+	
 	
 	/**
 	 * Check if the player has enough tokens in his resources to pay the card given.
@@ -277,8 +285,55 @@ public class IA implements Participant {
 				if(val_joker + this.ressources.get(name) + this.bonus.get(name) < val){
 					return false;
 				}
-				/* on attribue au joker une nouvelle valeujr en retirant ce qui a pu être payé avec les bonus et les ressources */
+				/* on attribue au joker une nouvelle valeur en retirant ce qui a pu être payé avec les bonus et les ressources */
 				val_joker = val_joker - ( val - (this.ressources.get(name)+ this.bonus.get(name)) );
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 *  This method check if the game would validate or invalidate aN AI buying attempt
+	 * 
+	 * @param joueur
+	 * 		   The player whom we will look at the reserve and the ressources
+	 * 
+	 * @param carte_numero
+	 *        The numbers of the card that the user wants to buy. It allows to identify it.
+	 *        
+	*  @return An int which the value indicates either the operation succeed or failed
+	*  
+	*  -1 = failure
+	*  1 = success
+	*  0 = the player wanted to cancel
+	 */
+private boolean testAiCheckMoney(CarteDev card, Mode game) {
+		
+		Objects.requireNonNull(card);
+		Objects.requireNonNull(game);
+		
+		var copieIa= this;
+		var copieGame = game;
+		var copieCard = card;
+		var val_joker = copieIa.ressources().get("Jaune");
+		
+		for(var elem : copieCard.coût().entrySet()) {
+			
+			var name = elem.getKey();
+			var val = elem.getValue();
+
+			/* on vérifie que le user, grâce à ses ressources et/ou ses bonus puisses acheter la carte*/
+			if(copieIa.ressources.get(name) + copieIa.bonus.get(name) < val) {
+				
+				if(val_joker <= 0) {
+					return false;
+				}
+				if(val_joker + copieIa.ressources.get(name) + copieIa.bonus.get(name) < val){
+					return false;
+				}
+				/* on attribue au joker une nouvelle valeur en retirant ce qui a pu être payé avec les bonus et les ressources */
+				val_joker = val_joker - ( val - (copieIa.ressources.get(name)+ copieIa.bonus.get(name)) );
 			}
 		}
 		
