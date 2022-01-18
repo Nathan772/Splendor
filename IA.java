@@ -308,6 +308,68 @@ public class IA implements Participant {
 	*  1 = success
 	*  0 = the player wanted to cancel
 	 */
+	
+/** This create a card with a random number and a random level
+ * 
+ * @return an HashMap which represents the random card that had been created.
+ */
+
+	
+private HashMap<Integer, Integer> RandomCardChoosen(){
+	var carte = new HashMap<Integer,Integer>();
+	/* on choisit un numero de carte entre 0 et 3*/
+	var choosen_card =  (int)(4*Math.random());
+	/* on choisit un numero de carte entre 1 et 3*/
+	var ligne_choosen =  (int)(2*Math.random())+1;
+	carte.put(ligne_choosen, choosen_card);
+	return carte;
+}
+
+/**
+ *  This method check either an AI can buy a card. For this purpose it launch several attempts (5 times) with random card level and number.
+ * 
+ * @param game
+ * 		  The game state at this moment
+ * 
+ *        
+*  @return an hashMap which is null if the player can't buy any card. 
+*  an hashMap which contain the buyable card number and level if the ai can buy it.
+*  
+ */
+private HashMap<Integer,Integer> testBuyableCard(Mode game){
+	var copieGame = game;
+	var copieiA = this;
+	/* on tente cinq fois d'acheter une carte avec des informations aléatoires mais possibles*/
+	for(var i = 0 ; i < 5;i++) {
+		var carte = RandomCardChoosen();
+		var choosen_card = carte.entrySet().stream().findFirst().get().getKey();
+		var ligne_choosen = carte.entrySet().stream().findFirst().get().getValue();
+		/* carte qui va être testée*/
+		var realCard = copieGame.board().get(choosen_card).get(choosen_card);
+		/* si l'ia peut acheter cette carte, il la renvoie*/
+		if(copieiA.testAiCheckMoney(realCard,copieGame));
+			return carte;
+	}
+	return null;
+}
+
+
+/**
+ *  This method check either an AI can buy a specific card which hadn't been reserved.
+ *  It only does it into the function not really in the party.
+ * 
+ * @param game
+ * 		  The game state at this moment
+ * 
+ * @param card
+ * 		The card that the AI try to buy
+ *        
+*  @return a boolean which indicates either the operation succeed or failed
+*  
+*  true == success
+*  false == fail
+ */
+
 private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		
 		Objects.requireNonNull(card);
