@@ -503,6 +503,62 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		return carte;
 		
 	}
+	
+	/**This function do a deep copy of an HashMap.
+	 * @param the hashmap that one wants to copy.
+	 * 
+	 * @return the copy which has its own references.
+	 */
+	public static <T,U>HashMap<T,U> copieHashmap(HashMap<T,U> hash) {
+		Objects.requireNonNull(hash, "the hashmap argument can't be null");
+		HashMap<T,U> copie = new HashMap<T,U>();
+		if(hash.size() == 0)
+			return copie;
+		/* copie les éléments*/
+		for(HashMap.Entry<T,U> entry : hash.entrySet()){
+			var cle = entry.getKey();
+			var value = entry.getValue();
+			copie.put(cle, value);
+		}
+		/* renvoie la copie qui a ses propres références pour les valeurs*/
+		return copie;
+	}
+	
+	/**This function do a deep copy of an Arraylist.
+	 * @param the arraylist that one wants to copy
+	 * 
+	 * @return the copy which has its own references.
+	 */
+	/*ArrayList<CarteDev> reserve;
+	public static <U>ArrayList<U> copieArray(ArrayList<U> originale) {
+		Objects.requireNonNull(hash, "the hashmap argument can't be null");
+		
+		if(U == joueur)
+		HashMap<T,U> copie;
+		if(hash.size() == 0)
+			return copie;*/
+		/* copie les éléments*/
+		/*for(HashMap.Entry<T,U> entry : hash.entrySet()){
+			var cle = entry.getKey();
+			var value = entry.getValue();
+			copie.put(cle, value);
+		}*/
+		/* renvoie la copie qui a ses propres références pour les valeurs*/
+		/*return copie;
+	}*/
+	
+	/**This function do a deep copy of an AI.
+	 * 
+	 * @return the copy which has its own references.
+	 */
+	public IA copieIA() {
+		IA copie = new IA(this.pseudo(), this.age(),this.points_prestiges());
+		copie.cartes = this.cartes;
+		copie.ressources = copieHashmap(this.ressources);
+		copie.bonus = copieHashmap(this.bonus);
+		return copie;
+	}
+
 	/*
 	public int achatCarte() {
 		Objects.requireNonNull(this);
