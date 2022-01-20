@@ -60,6 +60,25 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		return new CarteDev(Integer.parseInt(tab[0]), tab[1], Integer.parseInt(tab[2]), tab[3], cout);
 	}
 	
+	@Override
+	/**
+	 * Do a deep copy of a development card.
+	 * 
+	 * 
+	 * @return the deep copy.
+	 * 
+	 */
+	protected Object clone() throws CloneNotSupportedException{
+		String objet2;
+		var copie1 = new Copie();
+		/* on fait une copie profonde des chaines de caractère*/
+		objet2 = copie1.copieChaine(object);
+		var couleur2 = copie1.copieChaine(couleur);
+		var cout = copie1.copieHashmap(this.cout);
+		CarteDev copie = new CarteDev(this.niveau(), couleur2,this.points(), objet2, cout);
+		return copie;	
+	}
+	
 	
 	
 	private static String chaineFormatte(String name_card) {			
