@@ -1,6 +1,7 @@
 package fr.umlv.players;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import fr.umlv.objects.*;
 import fr.umlv.saisie.*;
 import fr.umlv.affichage.Affichage;
+import fr.umlv.copie.Copie;
 import fr.umlv.game.Partie;
 import fr.umlv.game.mode.Mode;
 
@@ -271,7 +273,7 @@ public class IA implements Participant {
 		
 		var val_joker = this.ressources().get("Jaune");
 		
-		for(var elem : card.coût().entrySet()) {
+		for(var elem : card.cout().entrySet()) {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
@@ -380,7 +382,7 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		var copieCard = card;
 		var val_joker = copieIa.ressources().get("Jaune");
 		
-		for(var elem : copieCard.coût().entrySet()) {
+		for(var elem : copieCard.cout().entrySet()) {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
@@ -441,7 +443,7 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		
 		this.addPrestige(carte.points());
 		
-		for(var elem : carte.coût().entrySet()) {
+		for(var elem : carte.cout().entrySet()) {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
@@ -503,26 +505,7 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		return carte;
 		
 	}
-	
-	/**This function do a deep copy of an HashMap.
-	 * @param the hashmap that one wants to copy.
-	 * 
-	 * @return the copy which has its own references.
-	 */
-	public static <T,U>HashMap<T,U> copieHashmap(HashMap<T,U> hash) {
-		Objects.requireNonNull(hash, "the hashmap argument can't be null");
-		HashMap<T,U> copie = new HashMap<T,U>();
-		if(hash.size() == 0)
-			return copie;
-		/* copie les éléments*/
-		for(HashMap.Entry<T,U> entry : hash.entrySet()){
-			var cle = entry.getKey();
-			var value = entry.getValue();
-			copie.put(cle, value);
-		}
-		/* renvoie la copie qui a ses propres références pour les valeurs*/
-		return copie;
-	}
+
 	
 	/**This function do a deep copy of an Arraylist.
 	 * @param the arraylist that one wants to copy
@@ -551,13 +534,38 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 	 * 
 	 * @return the copy which has its own references.
 	 */
+	
 	public IA copieIA() {
+		Copie copie1 = new Copie();
 		IA copie = new IA(this.pseudo(), this.age(),this.points_prestiges());
 		copie.cartes = this.cartes;
-		copie.ressources = copieHashmap(this.ressources);
-		copie.bonus = copieHashmap(this.bonus);
+		copie.ressources = copie1.copieHashmap(this.ressources);
+		copie.bonus = copie1.copieHashmap(this.bonus);
 		return copie;
 	}
+	
+	@Override
+	/**This function do a deep copy of an HashMap.
+	 * @param the hashmap that one wants to copy.
+	 * 
+	 * @return the copy which has its own references.
+	 */
+	protected Object clone() throws CloneNotSupportedException{
+		var copie1 = new Copie();
+		IA copie = new IA(this.pseudo(), this.age(),this.points_prestiges());
+		copie.cartes = this.cartes;
+		copie.ressources = copie1.copieHashmap(this.ressources);
+		copie.bonus = copie1.copieHashmap(this.bonus);
+		/* à finir la copie de la réserve n'a pas été faite*/
+		/*copie.reserve = this.reserve.clone();
+		Collections.copy(copie.reserve, this.reserve);*/
+		return copie;	
+	}
+	
+	/*
+	private ArrayList<CarteDev> reserve;*/
+
+	/**
 
 	/*
 	public int achatCarte() {
