@@ -1,4 +1,4 @@
-package fr.umlv.copie;
+=package fr.umlv.copie;
 
 import java.util.HashMap;
 import java.util.Objects;
