@@ -53,6 +53,26 @@ public class IA implements Participant {
 	 * All the reserved cards of a player
 	 */
 	private ArrayList<CarteDev> reserve;
+	/*
+	 * The card that the player will buy for the next turn
+	 * its value is null if he won't buy anything.
+	 * Its value is filled during the test phase.
+	 * The "value" value is -1 if the player want to buy a reserved card.
+	 * 
+	 */
+	private HashMap<Integer,Integer> next_achat;
+	
+	/*
+	 * The card that the player will buy for the next turn
+	 * its value is null if he won't buy anything.
+	 * Its value is filled during the test phase.
+	 */
+	
+	/*
+	 * this variable enable to know if the player will buy a reserved card or a card on the board.
+	 * Its value is 1 if it's a reserved card and 0 if it is from the board. -1 means no buying attempt.
+	 */
+	private int achat_type;
 
 	/**
 	 * Constructor of the type Joueur.
@@ -87,6 +107,8 @@ public class IA implements Participant {
 		this.ressources = new HashMap<>();
 		this.initRessourcesMap();
 		this.initBonus();
+		this.next_achat = null;
+		this.achat_type = 0;
 		
 		/*RAJOUTER INITIALISATION DE LA GRAINE*/
 	}
@@ -328,19 +350,19 @@ private HashMap<Integer, Integer> RandomCardChoosen(){
 }
 
 /**
- *  This method check either an AI can buy a card. For this purpose it launch several attempts (5 times) with random card level and number.
+ *  This method check if an AI can buy a card. For this purpose it launch several attempts (5 times) with random card level and number.
  * 
  * @param game
  * 		  The game state at this moment
  * 
  *        
-*  @return an hashMap which is null if the player can't buy any card. 
-*  an hashMap which contain the buyable card number and level if the ai can buy it.
+*  @return boolean which indicates if the AI can buy the card.
+*  True means "yes", false means "no".
 *  
  */
-private HashMap<Integer,Integer> testBuyableCard(Mode game){
-	var copieGame = game;
-	var copieiA = this;
+private boolean testBuyableCard(Mode game){
+	var copieGame = game.deepClone();
+	var copieiA = (IA)this.clone();
 	/* on tente cinq fois d'acheter une carte avec des informations aléatoires mais possibles*/
 	for(var i = 0 ; i < 5;i++) {
 		var carte = RandomCardChoosen();
@@ -349,10 +371,17 @@ private HashMap<Integer,Integer> testBuyableCard(Mode game){
 		/* carte qui va être testée*/
 		var realCard = copieGame.board().get(choosen_card).get(choosen_card);
 		/* si l'ia peut acheter cette carte, il la renvoie*/
-		if(copieiA.testAiCheckMoney(realCard,copieGame));
-			return carte;
+		if(copieiA.checkMoney(realCard,copieGame)) {
+			this.next_achat.remove(0);
+			/* le user choisit d'acheter une carte qui n'est pas dans la réserve*/
+			this.achat_type = 0;
+			/* on enregistre la carte qu'il achètera*/
+			this.next_achat.put(choosen_card, ligne_choosen);
+			return true;
+		}
+			
 	}
-	return null;
+	return false;
 }
 
 
@@ -376,9 +405,9 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		
 		Objects.requireNonNull(card);
 		Objects.requireNonNull(game);
-		
-		var copieIa= this;
-		var copieGame = game;
+		/* la deep copie n'est peut-être pas nécessaire, à vérifier*/
+		var copieIa= (IA)this.clone();
+		var copieGame = game.deepClone(); 
 		var copieCard = card;
 		var val_joker = copieIa.ressources().get("Jaune");
 		
@@ -396,8 +425,6 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 				if(val_joker + copieIa.ressources.get(name) + copieIa.bonus.get(name) < val){
 					return false;
 				}
-				/* on attribue au joker une nouvelle valeur en retirant ce qui a pu être payé avec les bonus et les ressources */
-				val_joker = val_joker - ( val - (copieIa.ressources.get(name)+ copieIa.bonus.get(name)) );
 			}
 		}
 		
@@ -505,6 +532,62 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		return carte;
 		
 	}
+	
+	/**
+	 *  This method test if the user can validate or invalidate a iabuying attempt
+	 * 
+	 * @param ia
+	 *        the player whom we will look at the reserve and the ressources
+	 *        
+	 * @param carte_numero
+	 *        the number of the card that the user wants to buy. It allows to identify it.
+	 *        
+	 *  @return a boolean which the value indicates either the operation succeed or failed
+	 *  
+	 *  true = success
+	 *  false = failure
+	 */
+	private boolean testIavalidationAchatReserve(IA ia, int carte_numero, Mode game) {
+		
+		Objects.requireNonNull(ia);
+		Objects.requireNonNull(this);
+		Objects.requireNonNull(carte_numero);
+		var game_copie = game.deepClone();
+		if(carte_numero <= 0) {
+			return false;
+		}
+		//3 lignes
+		if(ia.acheteCarte(ia.reserve().get(carte_numero-1), game_copie)) {
+			return true;
+			
+		}
+		return false;
+	}
+	public int TestIaAchatCarteReservee(Mode game){
+		Objects.requireNonNull(this);
+		var game_copie = game.deepClone();
+		var ia = (IA)this.clone();
+		/* cas où la partie avec les cartes réservées n'est pas vide*/
+		if(this.reserve().size() > 0) {
+			for(var carte_num = this.reserve().size(); carte_num >= 1 ;carte_num--) {
+				/* cas où le numéro de la carte est valide*/
+				if(testIavalidationAchatReserve(ia, carte_num, game_copie)) {
+					/* on supprime les anciennes cartes à acheter*/
+					this.next_achat.remove(0);
+					/* le user choisit la carte qu'il va prendre*/
+					this.next_achat.put(-1, carte_num);
+					/* le user prend une carte réservé*/
+					this.achat_type = 1;
+					return 1;
+				}	
+				/* cas où l'utilisateur peut payer */
+				//validationAchatReserve(game, nb_joueurs, mode_jeu, points_victoires, tour, tour_valide, joueur, carte_numero);
+			}
+		}
+		/* échec, aucune carte n'est achetable*/
+		return -1;
+
+	}
 
 	
 	/**This function do a deep copy of an Arraylist.
@@ -530,38 +613,53 @@ private boolean testAiCheckMoney(CarteDev card, Mode game) {
 		/*return copie;
 	}*/
 	
-	/**This function do a deep copy of an AI.
-	 * 
-	 * @return the copy which has its own references.
-	 */
 	
-	public IA copieIA() {
+	
+	/*
+	 * à supprimer
+	 * public IA copieIA() {
 		Copie copie1 = new Copie();
 		IA copie = new IA(this.pseudo(), this.age(),this.points_prestiges());
 		copie.cartes = this.cartes;
 		copie.ressources = copie1.copieHashmap(this.ressources);
 		copie.bonus = copie1.copieHashmap(this.bonus);
 		return copie;
-	}
+	}*/
 	
 	@Override
-	/**This function do a deep copy of an HashMap.
-	 * @param the hashmap that one wants to copy.
+	/**This function do a deep copy of an AI.
 	 * 
 	 * @return the copy which has its own references.
 	 */
-	protected Object clone() throws CloneNotSupportedException{
+	protected Object clone(){
+		Objects.requireNonNull(this);
 		var copie1 = new Copie();
 		IA copie = new IA(this.pseudo(), this.age(),this.points_prestiges());
 		copie.cartes = this.cartes;
 		copie.ressources = copie1.copieHashmap(this.ressources);
 		copie.bonus = copie1.copieHashmap(this.bonus);
 		/* à finir la copie de la réserve n'a pas été faite*/
-		/*copie.reserve = this.reserve.clone();
-		Collections.copy(copie.reserve, this.reserve);*/
-		return copie;	
+		/*copie.reserve = this.reserve.clone();*/
+		Collections.copy(copie.reserve, this.reserve);
+		return (IA)copie;	
 	}
-	
+	public static void main(String[] args) {
+		var ia1 = new IA("ll", 12, 0);
+		var hash2 = new HashMap<Integer,IA>();
+		/* cast nécessaire lorsqu'on utilise clone*/
+		IA ia2 = (IA)ia1.clone();
+		var hash = new HashMap<Integer,IA>();
+		/*hash.put(1,  ia1);*/
+		/* fait une copie pronfonde car il utilise les méthodes des champs lorsqu'on appelle clone*/
+		hash2 = (HashMap<Integer,IA>)hash.clone();
+		hash2.put(1, ia1);
+		/*hash.put("ooo", 3);
+		CarteDev carte1 = new CarteDev(1,"abc",1,"obj",hash);
+		ia2.reserve.add(carte1);*/
+		System.out.println("la réserve de hash : "+hash.toString());
+		System.out.println("la réserve de hash2 : "+hash2.toString());
+		
+	}
 	/*
 	private ArrayList<CarteDev> reserve;*/
 
