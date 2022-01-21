@@ -1,29 +1,35 @@
+package fr.umlv.objects;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import fr.umlv.copie.Copie;
+import fr.umlv.players.IA;
+
 
 /**
+ * Declaration of the type CarteDev. A development card is an objet with a level, a bonus color, some points values 
+ * (it can be 0 too), it name , a cost (number of tokens needed to pay the card)
  * 
- * @author dylandejesus
+ * @author dylandejesus nathanbilingi
  */
-record CarteDev(int niveau, String couleur, int points , String object, HashMap<String, Integer> coût) implements Carte {
+public record CarteDev(int niveau, String couleur, int points , String object, HashMap<String, Integer> cout) implements Carte {
 	
 	
 	/**
-	 * Constructor of the type  CarteDev
+	 * Constructor of the type  CarteDev.
 	 * 
 	 * @param couleur
-	 *        
+	 * 		  Color of the card
 	 * 
 	 * @param coût
+	 * 		  Cost to earn the card
 	 * 
 	 * @param points
-	 * 
+	 * 		  Points value it can give
 	 */
 	public CarteDev{
-		
-		/*Verifier avec switchs toutes les couleurs*/
 		
 		Objects.requireNonNull(couleur, "Carte de couleur null");
 		
@@ -34,13 +40,17 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 	}
 	
 	/**
+	 * Create a Development Card from the information taken on a String line. The informations of the 
+	 * line must be separated by a character : " - ", then with these informations it creates a card.
 	 * 
-	 * 
-	 * 
-	 * @param line
-	 * @return
+	 * @param line 
+	 *        Formatted String line
+	 *        
+	 * @return Development card created
 	 */
 	public static CarteDev fromText(String line) {
+		
+		Objects.requireNonNull(line);
 		
 		var couleurs = List.of("Blanc", "Bleu", "Vert", "Rouge", "Noir");
 		var tab = line.split(" - ");
@@ -60,27 +70,15 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		return new CarteDev(Integer.parseInt(tab[0]), tab[1], Integer.parseInt(tab[2]), tab[3], cout);
 	}
 	
-	@Override
 	/**
-	 * Do a deep copy of a development card.
+	 * Returns a formatted String of a String given. It creates a new String as it can write properly
+	 * the name of a Developement card.
 	 * 
+	 * @param name_card
+	 *        Name of the card that must be formatted
 	 * 
-	 * @return the deep copy.
-	 * 
+	 * @return The new formatted name
 	 */
-	protected Object clone() throws CloneNotSupportedException{
-		String objet2;
-		var copie1 = new Copie();
-		/* on fait une copie profonde des chaines de caractère*/
-		objet2 = copie1.copieChaine(object);
-		var couleur2 = copie1.copieChaine(couleur);
-		var cout = copie1.copieHashmap(this.cout);
-		CarteDev copie = new CarteDev(this.niveau(), couleur2,this.points(), objet2, cout);
-		return copie;	
-	}
-	
-	
-	
 	private static String chaineFormatte(String name_card) {			
 		
 		if(name_card == null) {
@@ -108,8 +106,26 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		return chaine.toString();
 	}
 	
+	@Override
 	/**
-	 * String representation of a CarteDev.
+	 * Do a deep copy of a development card.
+	 * 
+	 * 
+	 * @return the deep copy.
+	 * 
+	 */
+	protected Object clone() throws CloneNotSupportedException{
+		String objet2;
+		var copie1 = new Copie();
+		/* on fait une copie profonde des chaines de caractère*/
+		objet2 = copie1.copieChaine(object);
+		var couleur2 = copie1.copieChaine(couleur);
+		var cout = copie1.copieHashmap(this.cout);
+		CarteDev copie = new CarteDev(this.niveau(), couleur2,this.points(), objet2, cout);
+		return copie;	
+	}
+	/**
+	 * String representation of a CarteDev.  It's a card representation drawn on the console.
 	 */
 	@Override
 	public String toString() {
@@ -126,14 +142,13 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 			fin_first_line = "   |\n";
 		}
 		
-		
 		var first_line = "|  " + this.points + "          " + this.couleur + fin_first_line;
 		var vide = "|                    |\n";
 		var name = chaineFormatte(this.object);
 		
 		var fin_ligne = "";
 		
-		for(var elem : this.coût().entrySet()) {
+		for(var elem : this.cout().entrySet()) {
 			
 			var couleur_name = elem.getKey();
 			var couleur_val = elem.getValue();
@@ -148,6 +163,4 @@ record CarteDev(int niveau, String couleur, int points , String object, HashMap<
 		
 		return ligne + vide + first_line + vide + vide + name + vide + vide + cout + vide + ligne;
 	}
-	
-	
 }
