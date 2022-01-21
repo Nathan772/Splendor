@@ -1,7 +1,15 @@
+package fr.umlv.players;
+
 import java.util.Objects;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import fr.umlv.objects.*;
+import fr.umlv.saisie.*;
+import fr.umlv.copie.Copie;
+import fr.umlv.game.mode.Mode;
 
 
 /**
@@ -9,7 +17,7 @@ import java.util.List;
  * 
  * @author dylandejesus nathanbilingi
  */
-public class Joueur {
+public class Joueur implements Participant {
 	
 	/**
 	 * Number of cards earned by a player
@@ -94,6 +102,7 @@ public class Joueur {
 	public Joueur(String pseudo, int age) {
 		this(pseudo, age, 0);
 	}
+
 	
 	/**
 	 * cartes field getter.
@@ -231,6 +240,25 @@ public class Joueur {
 		return old_val - val;
 	}
 	
+	@Override
+	/**This function do a deep copy of a player.
+	 * 
+	 * @return the copy which has its own references.
+	 */
+	protected Object clone(){
+		Objects.requireNonNull(this);
+		var copie1 = new Copie();
+		Joueur copie = new Joueur(this.pseudo(), this.age(),this.points_prestiges());
+		copie.cartes = this.cartes;
+		copie.ressources = copie1.copieHashmap(this.ressources);
+		copie.bonus = copie1.copieHashmap(this.bonus);
+		/* à finir la copie de la réserve n'a pas été faite*/
+		/*copie.reserve = this.reserve.clone();*/
+		Collections.copy(copie.reserve, this.reserve);
+		return copie;	
+	}
+	 
+	
 	
 	/**
 	 * Rewrite of the equals function, allows to know if two Players are equal or not. Returns
@@ -274,7 +302,7 @@ public class Joueur {
 		System.out.println("Couleur : \n");
 		var jeton = Saisie.saisieJeton();
 		System.out.println("Nombre : \n");
-		var quantite = Saisie.choixIntervalle(1,9);
+		var quantite = Saisie.choixIntervalle(1,9, null, 0);
 		this.bonus.put(jeton.couleur(), quantite);
 	}
 	
@@ -320,7 +348,7 @@ public class Joueur {
 		
 		this.addPrestige(carte.points());
 		
-		for(var elem : carte.coût().entrySet()) {
+		for(var elem : carte.cout().entrySet()) {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
@@ -403,7 +431,7 @@ public class Joueur {
 		
 		var val_joker = this.ressources().get("Jaune");
 		
-		for(var elem : card.coût().entrySet()) {
+		for(var elem : card.cout().entrySet()) {
 			
 			var name = elem.getKey();
 			var val = elem.getValue();
@@ -562,6 +590,26 @@ public class Joueur {
 		
 		return true;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public int decisionMenu(){
+		/**Mettre la méthode de saisie*/
+		return 0;
+	}
+	
+	
+	
+	
+	
 	
 	
 	
