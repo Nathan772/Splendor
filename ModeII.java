@@ -13,6 +13,7 @@ import java.util.Objects;
 import fr.umlv.players.*;
 import fr.umlv.objects.*;
 import fr.umlv.affichage.*;
+import fr.umlv.copie.Copie;
 import fr.umlv.saisie.*;
 import fr.umlv.game.Partie;
 
@@ -330,7 +331,7 @@ public class ModeII implements Mode {
 	 * @param noble_chosen
 	 *        Noble chosen to remove
 	 */
-	private void efface_noble(Tuile noble_chosen) {
+	private void efface_noble(Tuile noble_chosen, Affichage affichage) {
 		
 		var iterator = this.tuiles_board.iterator();
 		
@@ -340,13 +341,14 @@ public class ModeII implements Mode {
 			
 			if(tuile1.equals(noble_chosen)) {
 				
-				System.out.println("Vous avez choisi : " + tuile1.name() + " ");
+				affichage.affichageMessageActions("Vous avez choisi : " + tuile1.name() + " ");
 				iterator.remove();
 			}
 				
 		}
 	}
-	 
+	
+	
 	/**
 	 *  This method validate or invalidate a player's buying attempt
 	 * 
@@ -361,7 +363,7 @@ public class ModeII implements Mode {
 	 *  -1 = failure
 	 *  1 = success
 	 */
-	private int validationAchatReserve(Joueur joueur, int carte_numero) {
+	private int validationAchatReserve(Joueur joueur, int carte_numero, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		Objects.requireNonNull(this);
@@ -376,7 +378,7 @@ public class ModeII implements Mode {
 			
 			var carte_delete = joueur.reserve().get(carte_numero-1);
 			joueur.reserve().remove(carte_delete);
-			System.out.println("\n Votre achat a été réalisé avec succès ! \n");
+			affichage.affichageMessageActions("\n Votre achat a été réalisé avec succès ! \n");
 			return 1;
 			
 		}
@@ -385,6 +387,8 @@ public class ModeII implements Mode {
 		System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
 		return -1;
 	}
+	
+
 	
 	/**
 	 *  This method validate or invalidate a player's buying attempt
@@ -401,7 +405,7 @@ public class ModeII implements Mode {
 	*  1 = success
 	*  0 = the player wanted to cancel
 	 */
-	private int validationAchatNonReserve(Joueur joueur, HashMap<Integer, Integer> carte ) {
+	private int validationAchatNonReserve(Joueur joueur, HashMap<Integer, Integer> carte, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		Objects.requireNonNull(this);
@@ -414,20 +418,49 @@ public class ModeII implements Mode {
 		if(choosen_card <= 3 && choosen_card >= 0 && niveau >= 1 && niveau <= 3) {
 		
 			if(joueur.acheteCarte(this.board().get(niveau).get(choosen_card), this)) {
-				System.out.println("\nVotre carte a été achetée avec succès !\n");
+				affichage.affichageMessageActions("\nVotre carte a été achetée avec succès !\n");
 				this.piocheOneCard(niveau, choosen_card);	
 				return 1;
 			}
 			/* cas où la carte coûte trop cher, l'utilisateur revient au menu précédent de force car il ne peut pas se payer cette carte*/
 			else {
-				System.out.println("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
+				affichage.affichageMessageActions("\nVous n'avez pas assez de ressources pour acheter cette carte !\n");
 				return -1;
 			}
 		}
 		/* cas où la carte n'existe pas, l'utilisateur revient au menu précédent de force car le numéro de carte n'existe pas*/
-		System.out.println("\n Ce numéro de carte n'existe pas !\n");
+		affichage.affichageMessageActions("\n Ce numéro de carte n'existe pas !\n");
 		return 0;
 	}
+	/** Do a deep copy of a game mode.
+	 * 
+	 * @return the deep copy of the game mode.
+	 */
+	@Override
+	protected Object clone(){
+		Objects.requireNonNull(this);
+		Copie copie1 = new Copie();
+		ModeII copie2 = new ModeII(); 
+		Collections.copy(copie2.joueurs, this.joueurs);
+		copie2.jetons_disponibles = copie1.copieHashmap(this.jetons_disponibles);
+		copie2.taille_pioche = this.taille_pioche;
+		/* cast inévitable, à éviter*/
+		copie2.pioche = (HashMap <Integer, List<CarteDev>>) this.pioche.clone();
+		/* cast inévitable, à éviter*/
+		copie2.board = (HashMap <Integer, List<CarteDev>>) this.board.clone();
+		Collections.copy(copie2.tuiles_board, this.tuiles_board);
+		return copie2;	
+	}
+	/**
+	 * This method do a deep clone of a game mode.
+	 * 
+	 * @return the deep clone.
+	 */
+	@Override
+	public Mode deepClone(){
+		return (ModeII) this.clone();
+	}
+
 	
 	/**
 	 * This method handles the whole process necessary for a transaction
@@ -455,13 +488,13 @@ public class ModeII implements Mode {
 		/*Carte du Board*/
 		if(choix == 1) {
 			
-			var carte = Saisie.achatCarteNonReservee(2);
-			return validationAchatNonReserve(joueur, carte);
+			var carte = Saisie.achatCarteNonReservee(2, affichage);
+			return validationAchatNonReserve(joueur, carte, affichage);
 		}
 		
 		/*Carte Reserve*/
 		var carte = Saisie.achatCarteReservee(joueur, affichage);
-		return validationAchatReserve(joueur, carte);
+		return validationAchatReserve(joueur, carte, affichage);
 	}
 
 	/**
@@ -475,20 +508,20 @@ public class ModeII implements Mode {
 	 * 1 = everything worked
 	 * -1 = a problem occured the user has to redo his turn
 	 */
-	public int reservationCarte(Joueur joueur) {
+	public int reservationCarte(Joueur joueur, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		
-		var choix = Saisie.choixReservation();
+		var choix = Saisie.choixReservation(affichage);
 		
 		if(choix ==  1) {
-			var carte = Saisie.reservationCartePlateau();
-			return validationReservationCartePlateau(joueur,carte);
+			var carte = Saisie.reservationCartePlateau(affichage);
+			return validationReservationCartePlateau(joueur,carte, affichage);
 		}
 		
-		var carte = Saisie.reservationCartePioche();
+		var carte = Saisie.reservationCartePioche(affichage);
 		
-		return validationReservationCartePioche(joueur,carte);
+		return validationReservationCartePioche(joueur,carte, affichage);
 	}
 	
 	/**
@@ -504,7 +537,7 @@ public class ModeII implements Mode {
 	 * 1 = everything worked
 	 * -1 = a problem occured the user has to redo his turn
 	 */
-	private int validationReservationCartePioche(Joueur joueur, int niveau_carte) {
+	private int validationReservationCartePioche(Joueur joueur, int niveau_carte, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		Objects.requireNonNull(niveau_carte);
@@ -514,7 +547,7 @@ public class ModeII implements Mode {
 			return 1;
 		}
 		
-		System.out.println("Erreur les cartes de ce niveau ne sont plus disponibles! Vous recommencez votre tour ");
+		affichage.affichageMessageActions("Erreur les cartes de ce niveau ne sont plus disponibles! Vous recommencez votre tour ");
 		return -1;		
 
 	}
@@ -532,7 +565,7 @@ public class ModeII implements Mode {
 	 * 1 = everything worked
 	 * -1 = a problem occured the user has to redo his turn
 	 */
-	private int validationReservationCartePlateau(Joueur joueur, HashMap<Integer, Integer> carte) {
+	private int validationReservationCartePlateau(Joueur joueur, HashMap<Integer, Integer> carte, Affichage affichage) {
 		
 		Objects.requireNonNull(joueur);
 		Objects.requireNonNull(carte);
@@ -547,7 +580,7 @@ public class ModeII implements Mode {
 			return 1;
 		}
 		
-		System.out.println("Erreur ce numéro de carte n'existe pas, vous recommencez votre tour !");
+		affichage.affichageMessageActions("Erreur ce numéro de carte n'existe pas, vous recommencez votre tour !");
 		return -1;		
 	}
 	
@@ -583,10 +616,10 @@ public class ModeII implements Mode {
 				noble_chosen = Saisie.choixNoble(this, affichage,joueur,nobles_visiting);
 			}
 			joueur.addPrestige(noble_chosen.points_prestiges());
-			this.efface_noble(noble_chosen);
+			this.efface_noble(noble_chosen, affichage);
 			System.out.println("Vous avez maitnenant : " + joueur.points_prestiges());
 			System.out.println(" points de prestige ! "); 
-			Saisie.passer();
+			Saisie.passer(affichage);
 			
 			if(this.jetons_disponibles().get("Jaune") > 0) {
 				joueur.addRessource(new Jeton("Jaune"), 1);
@@ -603,7 +636,7 @@ public class ModeII implements Mode {
 		this.nobleVisiting(player, affichage);
 		
 		affichage.showJoueur(player);
-		Saisie.saisieFinTour();
+		Saisie.saisieFinTour(affichage);
 	}
 	
 }
