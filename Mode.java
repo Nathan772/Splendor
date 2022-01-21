@@ -42,12 +42,13 @@ public interface Mode {
 	
 	public int taille_pioche();
 	
+	public Mode deepClone();
 	
 	void initialisePartie();
 	
 	int achatCarte(Joueur joueur, Affichage affiche);
 	
-	int reservationCarte(Joueur joueur);
+	int reservationCarte(Joueur joueur, Affichage affichage);
 	
 	int giveNbPlayersPossible();
 	
@@ -376,11 +377,11 @@ public interface Mode {
 	 */
 	public default int priseRessource(Joueur joueur, Affichage affichage){
 
-		affichage.showJeton(this.jetons_disponibles(), "JETON");
+		affichage.showJeton(this.jetons_disponibles(), joueur.ressources(), "JETON");
 		
 		Objects.requireNonNull(joueur);
 		
-		var choix = Saisie.choixJeton();
+		var choix = Saisie.choixJeton(affichage);
 		
 		/* cas où l'utilisateur veut prendre 2 jetons identiques*/
 		if(choix == 1) {
@@ -406,7 +407,7 @@ public interface Mode {
 		while(!joueur.checkNbJetons()) {
 					
 					System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons()-10) + "  pour en avoir 10 maximum\n");
-					affichage.showJeton(joueur.ressources(), null);
+					affichage.showJeton(null, joueur.ressources(), null);
 					
 					
 					
@@ -448,7 +449,7 @@ public interface Mode {
 			while(!joueur.checkNbJetons()) {
 				
 				System.out.println("\n/!\\ Vous possèdez trop de jetons veuillez en supprimer " + (joueur.NbJetons() - 10) + "  pour en avoir 10\n");
-				affichage.showJeton(joueur.ressources(), null);
+				affichage.showJeton(null, joueur.ressources(), null);
 				
 				String jeton;
 				int quantite;
